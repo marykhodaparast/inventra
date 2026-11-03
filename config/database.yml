@@ -15,8 +15,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  username: inventra
+  password: <%= ENV.fetch("INVENTRA_DATABASE_PASSWORD") %>
+  host: localhost
+  port: 5432
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 

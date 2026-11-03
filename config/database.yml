@@ -16,7 +16,7 @@ default: &default
   adapter: postgresql
   encoding: unicode
   username: inventra
-  password: <%= ENV.fetch("INVENTRA_DATABASE_PASSWORD") %>
+  password: <%= ENV["INVENTRA_DATABASE_PASSWORD"] %>
   host: localhost
   port: 5432
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -87,20 +87,11 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: inventra_production
-    username: inventra
-    password: <%= ENV["INVENTRA_DATABASE_PASSWORD"] %>
+  primary:
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   cache:
-    <<: *primary_production
-    database: inventra_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: inventra_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: inventra_production_cable
-    migrations_paths: db/cable_migrate
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>

@@ -10,6 +10,12 @@ The goal is to provide a flexible platform for managing different types of resou
 
 This project is being developed as the final project for the Ruby on Rails course.
 
+## Live Demo
+
+**Live Application:** https://inventra-d63b5.containers.snapdeploy.app
+
+The initial version of Inventra is successfully deployed and publicly accessible.
+
 ## Technology Stack
 
 The project uses the following technologies:
@@ -17,10 +23,13 @@ The project uses the following technologies:
 - **Backend:** Ruby on Rails
 - **Programming Language:** Ruby
 - **Database:** PostgreSQL
+- **Production Database:** Neon
 - **ORM:** ActiveRecord
 - **Frontend:** HTML, CSS, JavaScript
 - **CSS Framework:** Bootstrap (planned)
 - **Version Control:** Git and GitHub
+- **Deployment:** SnapDeploy
+- **Containerization:** Docker
 
 ## Planned Features
 
@@ -99,7 +108,9 @@ Install dependencies:
 bundle install
 ```
 
-Create and configure the database:
+Configure your local PostgreSQL credentials using the environment variables expected by `config/database.yml`.
+
+Create and migrate the database:
 
 ```bash
 bin/rails db:create
@@ -114,31 +125,56 @@ bin/rails server
 
 Open the application in your browser:
 
-```text
 http://localhost:3000
+
+## Deployment
+
+Inventra is deployed using SnapDeploy, with PostgreSQL hosted on Neon.
+
+### Production Start Command
+
+```bash
+./bin/rails server -b 0.0.0.0 -p 3000
 ```
+
+### Production Environment Variables
+
+The following environment variables are configured securely through the deployment platform:
+
+- `RAILS_ENV`
+- `DATABASE_URL`
+- `RAILS_MASTER_KEY`
+- `SECRET_KEY_BASE`
+- `RAILS_MAX_THREADS`
+- `WEB_CONCURRENCY`
+
+Sensitive environment variable values are not stored in the GitHub repository.
 
 ## Development Progress
 
-The project is currently in its initial setup stage.
+### Completed
 
 - [x] Create the Rails application
-- [ ] Configure PostgreSQL database
-- [ ] Create the initial application homepage
-- [ ] Deploy the initial version
+- [x] Configure local PostgreSQL
+- [x] Set up the initial application homepage
+- [x] Configure the production database connection with Neon
+- [x] Configure the production environment
+- [x] Configure the Dockerfile for deployment
+- [x] Deploy the initial version successfully
+- [x] Publish the live application
+
+### Upcoming
+
 - [ ] Implement user authentication
+- [ ] Implement user profiles and roles
 - [ ] Implement inventory management
 - [ ] Implement custom fields
 - [ ] Implement custom inventory IDs
 - [ ] Implement access permissions
 - [ ] Implement search and collaboration features
-- [ ] Complete testing and deployment
-
-## Deployment
-
-The application is planned to be deployed using SnapDeploy.
-
-Deployment configuration and production setup will be documented as development progresses.
+- [ ] Implement dashboard and statistics
+- [ ] Add responsive UI and themes
+- [ ] Complete testing and final deployment
 
 ## Author
 

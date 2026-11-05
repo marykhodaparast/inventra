@@ -162,10 +162,10 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Configure the Dockerfile for deployment
 - [x] Deploy the initial version successfully
 - [x] Publish the live application
+- [x] Implement user authentication
 
 ### Upcoming
 
-- [ ] Implement user authentication
 - [ ] Implement user profiles and roles
 - [ ] Implement inventory management
 - [ ] Implement custom fields

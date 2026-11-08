@@ -1,0 +1,11 @@
+<h1>My Profile</h1>
+
+<% if @user.avatar_url.present? %>
+  <%= image_tag @user.avatar_url, alt: "Profile avatar", width: 120 %>
+<% end %>
+
+<p><strong>Name:</strong> <%= @user.name %></p>
+<p><strong>Email:</strong> <%= @user.email %></p>
+<p><strong>Bio:</strong> <%= @user.bio.presence || "No bio added yet." %></p>
+
+<%= link_to "Edit Profile", edit_profile_path %>

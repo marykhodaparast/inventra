@@ -12,13 +12,11 @@ This project is being developed as the final project for the Ruby on Rails cours
 
 ## Live Demo
 
-**Live Application:** https://inventra-d63b5.containers.snapdeploy.app
+**Live Application:** [https://inventra-d63b5.containers.snapdeploy.app](https://inventra-d63b5.containers.snapdeploy.app)
 
 The initial version of Inventra is successfully deployed and publicly accessible.
 
 ## Technology Stack
-
-The project uses the following technologies:
 
 - **Backend:** Ruby on Rails
 - **Programming Language:** Ruby
@@ -108,7 +106,24 @@ Install dependencies:
 bundle install
 ```
 
-Configure your local PostgreSQL credentials using the environment variables expected by `config/database.yml`.
+### Configure Local PostgreSQL Credentials
+
+The local database credentials are provided through environment variables.
+
+To enter your PostgreSQL password without displaying it while typing, run:
+
+```bash
+printf "PostgreSQL password: " ; read -s INVENTRA_DATABASE_PASSWORD ; echo ; export INVENTRA_DATABASE_PASSWORD
+```
+
+Enter your PostgreSQL password when prompted.
+
+**Important:**
+- Run this command in the same terminal session where you will execute Rails database commands.
+- The password is stored only in the current shell session.
+- Run the command again when opening a new terminal session.
+- Make sure `config/database.yml` reads the password from `INVENTRA_DATABASE_PASSWORD`.
+- Never commit database passwords or other sensitive credentials to GitHub.
 
 Create and migrate the database:
 
@@ -125,7 +140,7 @@ bin/rails server
 
 Open the application in your browser:
 
-http://localhost:3000
+[http://localhost:3000](http://localhost:3000)
 
 ## Deployment
 
@@ -163,10 +178,10 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Deploy the initial version successfully
 - [x] Publish the live application
 - [x] Implement user authentication
+- [x] Implement user profiles and roles
 
 ### Upcoming
 
-- [ ] Implement user profiles and roles
 - [ ] Implement inventory management
 - [ ] Implement custom fields
 - [ ] Implement custom inventory IDs
@@ -182,4 +197,4 @@ Sensitive environment variable values are not stored in the GitHub repository.
 
 Ruby on Rails Course – Final Project
 
-GitHub: https://github.com/marykhodaparast
+GitHub: [https://github.com/marykhodaparast](https://github.com/marykhodaparast)

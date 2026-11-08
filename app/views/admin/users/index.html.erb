@@ -1,0 +1,26 @@
+<h1>Manage Users</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td>
+  <%= form_with model: [:admin, user], method: :patch do |form| %>
+    <%= form.select :role, [["User", "user"], ["Admin", "admin"]] %>
+    <%= form.submit "Update Role" %>
+  <% end %>
+</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

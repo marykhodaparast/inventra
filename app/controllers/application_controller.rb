@@ -22,4 +22,11 @@ class ApplicationController < ActionController::Base
       redirect_to login_path, alert: "Please log in to continue."
     end
   end
+
+  def require_admin
+    unless current_user&.admin?
+      redirect_to root_path, alert: "Access denied."
+    end
+  end
 end
+

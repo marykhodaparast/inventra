@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users, only: [:index, :update]
   end
-  get "/inventories", to: "inventories#index", as: :inventories
+  resources :inventories, only: [:index, :new, :create, :edit, :update, :destroy]
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"

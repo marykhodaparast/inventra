@@ -1,2 +1,27 @@
-<h1>Inventories#index</h1>
-<p>Find me in app/views/inventories/index.html.erb</p>
+<h1>My Inventories</h1>
+
+<%= link_to "Create New Inventory", new_inventory_path %>
+
+<% if @inventories.any? %>
+  <% @inventories.each do |inventory| %>
+    <div>
+      <h2><%= inventory.name %></h2>
+
+      <p><%= inventory.description %></p>
+
+      <p>
+        Visibility:
+        <%= inventory.visibility %>
+      </p>
+
+      <%= link_to "Edit", edit_inventory_path(inventory) %>
+
+      <%= button_to "Delete",
+                    inventory_path(inventory),
+                    method: :delete,
+                    data: { turbo_confirm: "Are you sure?" } %>
+    </div>
+  <% end %>
+<% else %>
+  <p>You haven't created any inventories yet.</p>
+<% end %>

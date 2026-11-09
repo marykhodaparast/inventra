@@ -22,3 +22,32 @@
 <% end %>
 
 <%= link_to "Back to Inventories", inventories_path %>
+
+<hr>
+
+<h2>Categories</h2>
+
+<% @inventory.categories.each do |category| %>
+  <div>
+    <%= form_with model: [@inventory, category] do |form| %>
+      <%= form.text_field :name, required: true %>
+      <%= form.submit "Update Category" %>
+    <% end %>
+
+    <%= button_to "Delete Category",
+                  inventory_category_path(@inventory, category),
+                  method: :delete,
+                  data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+<% end %>
+
+<h3>Add New Category</h3>
+
+<%= form_with model: [@inventory, @inventory.categories.new] do |form| %>
+  <div>
+    <%= form.label :name, "Category Name" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <%= form.submit "Add Category" %>
+<% end %>

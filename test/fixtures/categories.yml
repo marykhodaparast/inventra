@@ -1,0 +1,7 @@
+one:
+  inventory: one
+  name: Books
+
+two:
+  inventory: two
+  name: Electronics

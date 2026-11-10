@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   end
   resources :inventories, only: [:index, :new, :create, :edit, :update, :destroy] do
     resources :categories, only: [:create, :update, :destroy]
+    resources :items, only: [:index, :new, :create, :show]
   end
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"

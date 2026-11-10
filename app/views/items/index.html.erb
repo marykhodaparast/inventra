@@ -1,0 +1,24 @@
+<h1><%= @inventory.name %> - Items</h1>
+
+<%= link_to "Add New Item", new_inventory_item_path(@inventory) %>
+
+<% if @items.any? %>
+  <% @items.each do |item| %>
+    <div>
+      <h2>
+        <%= link_to item.name,
+                    inventory_item_path(@inventory, item) %>
+      </h2>
+
+      <p><%= item.description %></p>
+      <p>
+        Category:
+        <%= item.category&.name || "Uncategorized" %>
+      </p>
+    </div>
+  <% end %>
+<% else %>
+  <p>No items found in this inventory.</p>
+<% end %>
+
+<%= link_to "Back to Inventories", inventories_path %>

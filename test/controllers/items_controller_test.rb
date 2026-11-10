@@ -1,0 +1,114 @@
+require "test_helper"
+
+class ItemsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = User.create!(
+      name: "Mary",
+      email: "mary@example.com",
+      password: "Secret123!",
+      password_confirmation: "Secret123!"
+    )
+
+    @inventory = @user.inventories.create!(
+      name: "My Inventory"
+    )
+
+    @category = @inventory.categories.create!(
+      name: "Electronics"
+    )
+
+    @item = @inventory.items.create!(
+      name: "Laptop",
+      description: "My personal laptop",
+      category: @category
+    )
+
+    post login_url, params: {
+      email: @user.email,
+      password: "Secret123!"
+    }
+  end
+
+  test "should display inventory items" do
+    get inventory_items_url(@inventory)
+
+    assert_response :success
+    assert_select "h2", "Laptop"
+  end
+
+  test "should display new item form" do
+    get new_inventory_item_url(@inventory)
+
+    assert_response :success
+    assert_select "form"
+  end
+
+  test "should create item" do
+    assert_difference("Item.count", 1) do
+      post inventory_items_url(@inventory), params: {
+        item: {
+          name: "Keyboard",
+          description: "Mechanical keyboard",
+          category_id: @category.id
+        }
+      }
+    end
+
+    created_item = Item.order(:id).last
+
+    assert_redirected_to inventory_item_path(@inventory, created_item)
+  end
+
+  test "should display item details" do
+    get inventory_item_url(@inventory, @item)
+
+    assert_response :success
+    assert_select "h1", "Laptop"
+  end
+
+  test "should not allow guest to access items" do
+    delete logout_url
+
+    get inventory_items_url(@inventory)
+
+    assert_redirected_to login_path
+  end
+
+  test "should not allow user to access another user's inventory items" do
+    other_user = User.create!(
+      name: "Other User",
+      email: "other@example.com",
+      password: "Secret123!",
+      password_confirmation: "Secret123!"
+    )
+
+    other_inventory = other_user.inventories.create!(
+      name: "Other Inventory"
+    )
+
+    get inventory_items_url(other_inventory)
+
+    assert_response :not_found
+  end
+
+  test "should not allow user to view item from another inventory" do
+    other_user = User.create!(
+      name: "Other User",
+      email: "other@example.com",
+      password: "Secret123!",
+      password_confirmation: "Secret123!"
+    )
+
+    other_inventory = other_user.inventories.create!(
+      name: "Other Inventory"
+    )
+
+    other_item = other_inventory.items.create!(
+      name: "Private Item"
+    )
+
+    get inventory_item_url(@inventory, other_item)
+
+    assert_response :not_found
+  end
+end

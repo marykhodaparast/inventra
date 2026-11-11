@@ -1,0 +1,11 @@
+<h1>Edit Item - <%= @inventory.name %></h1>
+
+<%= form_with model: [@inventory, @item] do |form| %>
+  <%= render "form", form: form %>
+
+  <div>
+    <%= form.submit "Update Item" %>
+  </div>
+<% end %>
+
+<%= link_to "Back to Item", inventory_item_path(@inventory, @item) %>

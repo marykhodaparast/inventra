@@ -1,24 +1,7 @@
 <h1>New Item - <%= @inventory.name %></h1>
 
 <%= form_with model: [@inventory, @item] do |form| %>
-  <div>
-    <%= form.label :name, "Item Name" %>
-    <%= form.text_field :name, required: true %>
-  </div>
-
-  <div>
-    <%= form.label :description, "Description" %>
-    <%= form.text_area :description %>
-  </div>
-
-  <div>
-    <%= form.label :category_id, "Category" %>
-    <%= form.collection_select :category_id,
-                               @inventory.categories,
-                               :id,
-                               :name,
-                               { include_blank: "No Category" } %>
-  </div>
+  <%= render "form", form: form %>
 
   <div>
     <%= form.submit "Create Item" %>

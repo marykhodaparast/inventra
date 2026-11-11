@@ -1,3 +1,4 @@
+
 require "test_helper"
 
 class ItemsControllerTest < ActionDispatch::IntegrationTest
@@ -108,6 +109,118 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     )
 
     get inventory_item_url(@inventory, other_item)
+
+    assert_response :not_found
+  end
+
+  test "should display edit item form" do
+    get edit_inventory_item_url(@inventory, @item)
+
+    assert_response :success
+    assert_select "h1", "Edit Item - My Inventory"
+  end
+
+  test "should update item" do
+    patch inventory_item_url(@inventory, @item), params: {
+      item: {
+        name: "Updated Laptop",
+        description: "Updated description",
+        category_id: @category.id
+      }
+    }
+
+    assert_redirected_to inventory_item_path(@inventory, @item)
+
+    @item.reload
+
+    assert_equal "Updated Laptop", @item.name
+    assert_equal "Updated description", @item.description
+  end
+
+  test "should not update item with invalid data" do
+    patch inventory_item_url(@inventory, @item), params: {
+      item: {
+        name: "",
+        description: "Updated description"
+      }
+    }
+
+    assert_response :unprocessable_entity
+
+    @item.reload
+
+    assert_equal "Laptop", @item.name
+  end
+
+  test "should delete item" do
+    assert_difference("Item.count", -1) do
+      delete inventory_item_url(@inventory, @item)
+    end
+
+    assert_redirected_to inventory_items_path(@inventory)
+  end
+
+  test "should not allow user to edit item from another inventory" do
+    other_user = User.create!(
+      name: "Other User",
+      email: "other@example.com",
+      password: "Secret123!"
+    )
+
+    other_inventory = other_user.inventories.create!(
+      name: "Other Inventory"
+    )
+
+    other_item = other_inventory.items.create!(
+      name: "Private Item"
+    )
+
+    get edit_inventory_item_url(@inventory, other_item)
+
+    assert_response :not_found
+  end
+
+  test "should not allow user to update item from another inventory" do
+    other_user = User.create!(
+      name: "Other User",
+      email: "other@example.com",
+      password: "Secret123!"
+    )
+
+    other_inventory = other_user.inventories.create!(
+      name: "Other Inventory"
+    )
+
+    other_item = other_inventory.items.create!(
+      name: "Private Item"
+    )
+
+    patch inventory_item_url(@inventory, other_item), params: {
+      item: { name: "Hacked Item" }
+    }
+
+    assert_response :not_found
+    assert_equal "Private Item", other_item.reload.name
+  end
+
+  test "should not allow user to delete item from another inventory" do
+    other_user = User.create!(
+      name: "Other User",
+      email: "other@example.com",
+      password: "Secret123!"
+    )
+
+    other_inventory = other_user.inventories.create!(
+      name: "Other Inventory"
+    )
+
+    other_item = other_inventory.items.create!(
+      name: "Private Item"
+    )
+
+    assert_no_difference("Item.count") do
+      delete inventory_item_url(@inventory, other_item)
+    end
 
     assert_response :not_found
   end

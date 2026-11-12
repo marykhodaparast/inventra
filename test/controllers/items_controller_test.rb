@@ -224,4 +224,24 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+  test "should not create item with category from another inventory" do
+    other_inventory = @user.inventories.create!(
+      name: "Second Inventory"
+    )
+
+    other_category = other_inventory.categories.create!(
+      name: "Other Category"
+    )
+
+    assert_no_difference("Item.count") do
+      post inventory_items_url(@inventory), params: {
+        item: {
+          name: "Invalid Item",
+          category_id: other_category.id
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
 end

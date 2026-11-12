@@ -52,4 +52,78 @@ class ItemTest < ActiveSupport::TestCase
   assert_includes item.errors[:category],
                   "must belong to the same inventory"
    end
+     test "should save custom text field value" do
+    field = @inventory.custom_fields.create!(
+      name: "Author",
+      field_type: "text"
+    )
+
+    item = @inventory.items.create!(
+      name: "Book",
+      custom_field_values: { field.id.to_s => "John" }
+    )
+
+    assert_equal "John", item.custom_field_values[field.id.to_s]
+  end
+
+  test "should convert number field value to a number" do
+    field = @inventory.custom_fields.create!(
+      name: "Price",
+      field_type: "number"
+    )
+
+    item = @inventory.items.create!(
+      name: "Laptop",
+      custom_field_values: { field.id.to_s => "1200" }
+    )
+
+    assert_equal 1200.0, item.custom_field_values[field.id.to_s]
+  end
+
+  test "should convert boolean field value to true" do
+    field = @inventory.custom_fields.create!(
+      name: "Available",
+      field_type: "boolean"
+    )
+
+    item = @inventory.items.create!(
+      name: "Laptop",
+      custom_field_values: { field.id.to_s => "1" }
+    )
+
+    assert_equal true, item.custom_field_values[field.id.to_s]
+  end
+
+  test "should reject invalid number field value" do
+    field = @inventory.custom_fields.create!(
+      name: "Price",
+      field_type: "number"
+    )
+
+    item = @inventory.items.new(
+      name: "Laptop",
+      custom_field_values: { field.id.to_s => "abc" }
+    )
+
+    assert_not item.valid?
+    assert_includes item.errors[:base], "Price must be a valid number"
+  end
+
+  test "should ignore custom field values from another inventory" do
+    another_inventory = @user.inventories.create!(
+      name: "Another Inventory"
+    )
+
+    foreign_field = another_inventory.custom_fields.create!(
+      name: "Secret",
+      field_type: "text"
+    )
+
+    item = @inventory.items.create!(
+      name: "Laptop",
+      custom_field_values: { foreign_field.id.to_s => "Hidden value" }
+    )
+
+    assert_not item.custom_field_values.key?(foreign_field.id.to_s)
+  end
 end

@@ -14,6 +14,29 @@
   <strong>Category:</strong>
   <%= @item.category&.name || "Uncategorized" %>
 </p>
+<hr>
+
+<h2>Custom Fields</h2>
+
+<% @inventory.custom_fields.order(:position).each do |custom_field| %>
+  <% value = @item.custom_field_values.to_h[custom_field.id.to_s] %>
+
+  <p>
+    <strong><%= custom_field.name %>:</strong>
+
+    <% if custom_field.field_type == "boolean" %>
+      <%= value == true ? "Yes" : "No" %>
+    <% elsif value.present? %>
+      <% if custom_field.field_type == "link" && value.match?(/\Ahttps?:\/\//) %>
+        <%= link_to value, value, target: "_blank", rel: "noopener noreferrer" %>
+      <% else %>
+        <%= value %>
+      <% end %>
+    <% else %>
+      Not provided
+    <% end %>
+  </p>
+<% end %>
 
 <%= link_to "Edit Item", edit_inventory_item_path(@inventory, @item) %>
 

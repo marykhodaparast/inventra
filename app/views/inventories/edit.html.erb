@@ -51,3 +51,58 @@
 
   <%= form.submit "Add Category" %>
 <% end %>
+
+<hr>
+
+<h2>Custom Fields</h2>
+
+<% @inventory.custom_fields.order(:position).each do |custom_field| %>
+  <div>
+    <%= form_with model: [@inventory, custom_field] do |form| %>
+      <div>
+        <%= form.label :name, "Field Name" %>
+        <%= form.text_field :name, required: true %>
+      </div>
+
+      <div>
+        <%= form.label :field_type, "Field Type" %>
+        <%= form.select :field_type, [
+          ["Text", "text"],
+          ["Textarea", "textarea"],
+          ["Number", "number"],
+          ["Link", "link"],
+          ["Boolean", "boolean"]
+        ] %>
+      </div>
+
+      <%= form.submit "Update Custom Field" %>
+    <% end %>
+
+    <%= button_to "Delete Custom Field",
+                  inventory_custom_field_path(@inventory, custom_field),
+                  method: :delete,
+                  data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+<% end %>
+
+<h3>Add New Custom Field</h3>
+
+<%= form_with model: [@inventory, @inventory.custom_fields.new] do |form| %>
+  <div>
+    <%= form.label :name, "Field Name" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :field_type, "Field Type" %>
+    <%= form.select :field_type, [
+      ["Text", "text"],
+      ["Textarea", "textarea"],
+      ["Number", "number"],
+      ["Link", "link"],
+      ["Boolean", "boolean"]
+    ] %>
+  </div>
+
+  <%= form.submit "Add Custom Field" %>
+<% end %>

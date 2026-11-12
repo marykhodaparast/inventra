@@ -55,6 +55,38 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:name, :description, :category_id)
+  permitted_params = params.require(:item).permit(
+    :name,
+    :description,
+    :category_id,
+    custom_field_values: {}
+  )
+
+  if permitted_params.key?(:custom_field_values)
+    allowed_ids = @inventory.custom_fields.pluck(:id).map(&:to_s)
+
+    existing_values =
+      if @item&.persisted?
+        @item.custom_field_values.to_h.slice(*allowed_ids)
+      else
+        {}
+      end
+
+    permitted_params[:custom_field_values] =
+      existing_values.merge(
+        permitted_custom_field_values(permitted_params[:custom_field_values])
+      )
   end
+
+  permitted_params
+end
+
+def permitted_custom_field_values(values)
+  return {} unless values.is_a?(ActionController::Parameters) ||
+                   values.is_a?(Hash)
+
+  allowed_ids = @inventory.custom_fields.pluck(:id).map(&:to_s)
+
+  values.to_h.slice(*allowed_ids)
+end
 end

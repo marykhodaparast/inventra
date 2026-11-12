@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_10_164850) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_160705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_10_164850) do
     t.datetime "updated_at", null: false
     t.index ["inventory_id", "name"], name: "index_categories_on_inventory_id_and_name", unique: true
     t.index ["inventory_id"], name: "index_categories_on_inventory_id"
+  end
+
+  create_table "custom_fields", force: :cascade do |t|
+    t.bigint "inventory_id", null: false
+    t.string "name", null: false
+    t.string "field_type", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id", "name"], name: "index_custom_fields_on_inventory_id_and_name", unique: true
+    t.index ["inventory_id"], name: "index_custom_fields_on_inventory_id"
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -40,6 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_10_164850) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "custom_field_values", default: {}, null: false
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["inventory_id"], name: "index_items_on_inventory_id"
   end
@@ -56,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_10_164850) do
   end
 
   add_foreign_key "categories", "inventories"
+  add_foreign_key "custom_fields", "inventories"
   add_foreign_key "inventories", "users"
   add_foreign_key "items", "categories"
   add_foreign_key "items", "inventories"

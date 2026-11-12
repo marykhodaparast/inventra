@@ -14,6 +14,7 @@
         <%= inventory.visibility %>
       </p>
 
+      <%= link_to "View Items", inventory_items_path(inventory) %>
       <%= link_to "Edit", edit_inventory_path(inventory) %>
 
       <%= button_to "Delete",

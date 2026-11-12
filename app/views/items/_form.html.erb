@@ -16,3 +16,45 @@
                              :name,
                              { include_blank: "No Category" } %>
 </div>
+<hr>
+
+<h3>Custom Fields</h3>
+
+<% @inventory.custom_fields.order(:position).each do |custom_field| %>
+  <% field_value = @item.custom_field_values[custom_field.id.to_s] %>
+
+  <div>
+    <%= label_tag "item_custom_field_values_#{custom_field.id}",
+                  custom_field.name %>
+
+    <% case custom_field.field_type %>
+    <% when "text" %>
+      <%= text_field_tag "item[custom_field_values][#{custom_field.id}]",
+                         field_value,
+                         id: "item_custom_field_values_#{custom_field.id}" %>
+
+    <% when "textarea" %>
+      <%= text_area_tag "item[custom_field_values][#{custom_field.id}]",
+                        field_value,
+                        id: "item_custom_field_values_#{custom_field.id}" %>
+
+    <% when "number" %>
+      <%= number_field_tag "item[custom_field_values][#{custom_field.id}]",
+                           field_value,
+                           id: "item_custom_field_values_#{custom_field.id}" %>
+
+    <% when "link" %>
+      <%= url_field_tag "item[custom_field_values][#{custom_field.id}]",
+                        field_value,
+                        id: "item_custom_field_values_#{custom_field.id}" %>
+
+    <% when "boolean" %>
+      <%= hidden_field_tag "item[custom_field_values][#{custom_field.id}]", "0" %>
+
+      <%= check_box_tag "item[custom_field_values][#{custom_field.id}]",
+                        "1",
+                        field_value == "1" || field_value == true,
+                        id: "item_custom_field_values_#{custom_field.id}" %>
+    <% end %>
+  </div>
+<% end %>

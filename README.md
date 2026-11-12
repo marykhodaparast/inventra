@@ -179,11 +179,11 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Publish the live application
 - [x] Implement user authentication
 - [x] Implement user profiles and roles
+- [x] Implement inventory management
+- [x] Implement custom fields
 
 ### Upcoming
 
-- [ ] Implement inventory management
-- [ ] Implement custom fields
 - [ ] Implement custom inventory IDs
 - [ ] Implement access permissions
 - [ ] Implement search and collaboration features

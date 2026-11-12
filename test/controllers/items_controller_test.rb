@@ -244,4 +244,89 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
+    test "should create item with custom field values" do
+    field = @inventory.custom_fields.create!(
+      name: "Author",
+      field_type: "text"
+    )
+
+    assert_difference("Item.count", 1) do
+      post inventory_items_url(@inventory), params: {
+        item: {
+          name: "New Book",
+          custom_field_values: {
+            field.id.to_s => "John"
+          }
+        }
+      }
+    end
+
+    created_item = Item.order(:id).last
+
+    assert_equal "John", created_item.custom_field_values[field.id.to_s]
+    assert_redirected_to inventory_item_path(@inventory, created_item)
+  end
+
+  test "should update item custom field values" do
+    field = @inventory.custom_fields.create!(
+      name: "Author",
+      field_type: "text"
+    )
+
+    patch inventory_item_url(@inventory, @item), params: {
+      item: {
+        custom_field_values: {
+          field.id.to_s => "Jane"
+        }
+      }
+    }
+
+    assert_redirected_to inventory_item_path(@inventory, @item)
+
+    @item.reload
+
+    assert_equal "Jane", @item.custom_field_values[field.id.to_s]
+  end
+
+    test "should preserve existing custom field values when updating other attributes" do
+    field = @inventory.custom_fields.create!(
+      name: "Author",
+      field_type: "text"
+    )
+
+    @item.update!(
+      custom_field_values: { field.id.to_s => "John" }
+    )
+
+    patch inventory_item_url(@inventory, @item), params: {
+      item: { name: "Updated Laptop" }
+    }
+
+    @item.reload
+
+    assert_equal "John", @item.custom_field_values[field.id.to_s]
+  end
+
+  test "should update boolean custom field value to false" do
+    field = @inventory.custom_fields.create!(
+      name: "Available",
+      field_type: "boolean"
+    )
+
+    @item.update!(
+      custom_field_values: { field.id.to_s => true }
+    )
+
+    patch inventory_item_url(@inventory, @item), params: {
+      item: {
+        custom_field_values: {
+          field.id.to_s => "0"
+        }
+      }
+    }
+
+    @item.reload
+
+    assert_equal false, @item.custom_field_values[field.id.to_s]
+  end
 end

@@ -51,10 +51,9 @@ The initial version of Inventra is successfully deployed and publicly accessible
 - Dynamically generate item forms based on field definitions
 
 ### Custom Inventory IDs
-- Custom ID formats for each inventory
-- Support fixed text, random numbers, GUIDs, dates, and sequences
-- Database-level uniqueness within each inventory
-- Custom ID validation and editing
+- Automatically generate sequential inventory IDs (e.g. INV-000001)
+- Ensure database-level uniqueness
+- Display custom IDs in inventory lists and edit pages
 
 ### Items
 - Create, view, edit, and delete inventory items
@@ -181,10 +180,10 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Implement user profiles and roles
 - [x] Implement inventory management
 - [x] Implement custom fields
+- [x] Implement custom inventory IDs
 
 ### Upcoming
 
-- [ ] Implement custom inventory IDs
 - [ ] Implement access permissions
 - [ ] Implement search and collaboration features
 - [ ] Implement dashboard and statistics

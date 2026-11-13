@@ -5,7 +5,12 @@
 <% if @inventories.any? %>
   <% @inventories.each do |inventory| %>
     <div>
-      <h2><%= inventory.name %></h2>
+           <h2><%= inventory.name %></h2>
+
+      <p>
+        Inventory ID:
+        <strong><%= inventory.custom_id %></strong>
+      </p>
 
       <p><%= inventory.description %></p>
 

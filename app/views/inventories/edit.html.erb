@@ -1,5 +1,10 @@
 <h1>Edit Inventory</h1>
 
+<p>
+  Inventory ID:
+  <strong><%= @inventory.custom_id %></strong>
+</p>
+
 <%= form_with model: @inventory do |form| %>
   <div>
     <%= form.label :name, "Inventory Name" %>

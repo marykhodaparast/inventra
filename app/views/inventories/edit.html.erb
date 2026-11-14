@@ -26,6 +26,69 @@
   </div>
 <% end %>
 
+<hr>
+
+<h2>Write Access</h2>
+
+<p>
+  Grant registered users permission to create, edit, and delete items
+  in this inventory.
+</p>
+
+<h3>Grant Access to a User</h3>
+
+<%= form_with url: inventory_inventory_accesses_path(@inventory), method: :post do %>
+  <div>
+    <%= label_tag :user_identifier, "Search by name or email" %>
+
+    <%= text_field_tag :user_identifier,
+                       nil,
+                       list: "available_users",
+                       placeholder: "Enter user name or email",
+                       required: true %>
+
+    <datalist id="available_users">
+      <% @available_users.each do |user| %>
+        <option value="<%= user.email %>"
+                label="<%= user.name %>"></option>
+      <% end %>
+    </datalist>
+  </div>
+
+  <%= submit_tag "Grant Write Access" %>
+<% end %>
+
+<h3>Users with Write Access</h3>
+
+<% if @inventory_accesses.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @inventory_accesses.each do |access| %>
+        <tr>
+          <td><%= access.user.name %></td>
+          <td><%= access.user.email %></td>
+          <td>
+            <%= button_to "Revoke Access",
+                          inventory_inventory_access_path(@inventory, access),
+                          method: :delete,
+                          data: { turbo_confirm: "Revoke this user's access?" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No users have write access yet.</p>
+<% end %>
+
 <%= link_to "Back to Inventories", inventories_path %>
 
 <hr>

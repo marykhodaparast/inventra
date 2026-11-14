@@ -70,7 +70,7 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
   end
 
   test "should not create category with duplicate name in the same inventory" do
@@ -126,7 +126,7 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
   end
 
   test "should not allow user to delete another user's category" do
@@ -147,7 +147,7 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
       delete inventory_category_url(other_inventory, category)
     end
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
     assert Category.exists?(category.id)
   end
   test "should allow same category name in different inventories" do

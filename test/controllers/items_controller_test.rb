@@ -67,31 +67,36 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Laptop"
   end
 
-  test "should not allow guest to access items" do
-    delete logout_url
+  test "should allow guest to view items" do
+  delete logout_url
 
-    get inventory_items_url(@inventory)
+  get inventory_items_url(@inventory)
 
-    assert_redirected_to login_path
+  assert_response :success
+  assert_select "h2", "Laptop"
+end
+
+  test "should allow user to view another user's inventory items" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  other_inventory.items.create!(
+    name: "Other Laptop"
+  )
+
+  get inventory_items_url(other_inventory)
+
+  assert_response :success
+  assert_select "h2", "Other Laptop"
   end
-
-  test "should not allow user to access another user's inventory items" do
-    other_user = User.create!(
-      name: "Other User",
-      email: "other@example.com",
-      password: "Secret123!",
-      password_confirmation: "Secret123!"
-    )
-
-    other_inventory = other_user.inventories.create!(
-      name: "Other Inventory"
-    )
-
-    get inventory_items_url(other_inventory)
-
-    assert_response :not_found
-  end
-
   test "should not allow user to view item from another inventory" do
     other_user = User.create!(
       name: "Other User",
@@ -329,4 +334,172 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal false, @item.custom_field_values[field.id.to_s]
   end
+  test "should not allow user without write access to create item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  assert_no_difference("Item.count") do
+    post inventory_items_url(other_inventory), params: {
+      item: {
+        name: "Unauthorized Item"
+      }
+    }
+  end
+
+  assert_redirected_to inventory_items_path(other_inventory)
+end
+test "should redirect guest when trying to create an item" do
+  delete logout_url
+
+  assert_no_difference("Item.count") do
+    post inventory_items_url(@inventory), params: {
+      item: {
+        name: "Guest Item"
+      }
+    }
+  end
+
+  assert_redirected_to login_path
+end
+test "should not allow user without write access to update item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  other_item = other_inventory.items.create!(
+    name: "Original Item"
+  )
+
+  patch inventory_item_url(other_inventory, other_item), params: {
+    item: { name: "Hacked Item" }
+  }
+
+  assert_redirected_to inventory_items_path(other_inventory)
+  assert_equal "Original Item", other_item.reload.name
+end
+test "should not allow user without write access to delete item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  other_item = other_inventory.items.create!(
+    name: "Protected Item"
+  )
+
+  assert_no_difference("Item.count") do
+    delete inventory_item_url(other_inventory, other_item)
+  end
+
+  assert_redirected_to inventory_items_path(other_inventory)
+  assert_equal "Protected Item", other_item.reload.name
+end
+test "should allow authenticated user to create item in public inventory" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  public_inventory = other_user.inventories.create!(
+    name: "Public Inventory",
+    visibility: "public"
+  )
+
+  assert_difference("Item.count", 1) do
+    post inventory_items_url(public_inventory), params: {
+      item: { name: "Public Item" }
+    }
+  end
+
+  created_item = Item.order(:id).last
+
+  assert_equal "Public Item", created_item.name
+  assert_redirected_to inventory_item_path(public_inventory, created_item)
+end
+test "should allow user with write access to create item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_difference("Item.count", 1) do
+    post inventory_items_url(other_inventory), params: {
+      item: { name: "Shared Item" }
+    }
+  end
+
+  created_item = Item.order(:id).last
+
+  assert_equal "Shared Item", created_item.name
+  assert_redirected_to inventory_item_path(other_inventory, created_item)
+end
+test "should allow admin to create item in another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  delete logout_url
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  assert_difference("Item.count", 1) do
+    post inventory_items_url(other_inventory), params: {
+      item: { name: "Admin Created Item" }
+    }
+  end
+
+  created_item = Item.order(:id).last
+
+  assert_equal "Admin Created Item", created_item.name
+  assert_redirected_to inventory_item_path(other_inventory, created_item)
+end
 end

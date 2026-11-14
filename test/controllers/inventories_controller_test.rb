@@ -10,11 +10,16 @@ class InventoriesControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "should redirect guest to login page" do
-    get inventories_url
+  test "should allow guest to view inventories" do
+  @user.inventories.create!(
+    name: "Publicly Visible Inventory"
+  )
 
-    assert_redirected_to login_path
-  end
+  get inventories_url
+
+  assert_response :success
+  assert_select "body", text: /Publicly Visible Inventory/
+end
 
   test "should allow logged in user to access inventories" do
     post login_url, params: {
@@ -144,7 +149,7 @@ class InventoriesControllerTest < ActionDispatch::IntegrationTest
 
     get edit_inventory_url(inventory)
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
   end
 
   test "should not allow user to update another user's inventory" do
@@ -168,7 +173,7 @@ class InventoriesControllerTest < ActionDispatch::IntegrationTest
       inventory: { name: "Hacked Inventory" }
     }
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
     assert_equal "Other User Inventory", inventory.reload.name
   end
 
@@ -193,7 +198,7 @@ class InventoriesControllerTest < ActionDispatch::IntegrationTest
       delete inventory_url(inventory)
     end
 
-    assert_response :not_found
+    assert_redirected_to inventories_path
   end
     test "should not create inventory with blank name" do
     post login_url, params: {
@@ -232,4 +237,75 @@ class InventoriesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
+  test "should redirect guest when trying to create inventory" do
+  assert_no_difference("Inventory.count") do
+    post inventories_url, params: {
+      inventory: {
+        name: "Guest Inventory",
+        description: "Created by guest",
+        visibility: "private"
+      }
+    }
+  end
+
+  assert_redirected_to login_path
+end
+test "should allow admin to update another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  inventory = @user.inventories.create!(
+    name: "Original Inventory"
+  )
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  patch inventory_url(inventory), params: {
+    inventory: { name: "Updated by Admin" }
+  }
+
+  assert_redirected_to inventories_path
+  assert_equal "Updated by Admin", inventory.reload.name
+end
+test "should redirect guest when trying to edit inventory" do
+  inventory = @user.inventories.create!(
+    name: "Protected Inventory"
+  )
+
+  get edit_inventory_url(inventory)
+
+  assert_redirected_to login_path
+end
+test "should redirect guest when trying to update inventory" do
+  inventory = @user.inventories.create!(
+    name: "Protected Inventory"
+  )
+
+  patch inventory_url(inventory), params: {
+    inventory: { name: "Changed by Guest" }
+  }
+
+  assert_redirected_to login_path
+  assert_equal "Protected Inventory", inventory.reload.name
+end
+test "should redirect guest when trying to delete inventory" do
+  inventory = @user.inventories.create!(
+    name: "Protected Inventory"
+  )
+
+  assert_no_difference("Inventory.count") do
+    delete inventory_url(inventory)
+  end
+
+  assert_redirected_to login_path
+  assert_equal "Protected Inventory", inventory.reload.name
+end
 end

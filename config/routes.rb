@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :categories, only: [:create, :update, :destroy]
     resources :custom_fields, only: [:create, :update, :destroy]
     resources :items, only: [:index, :new, :create, :show, :edit, :update, :destroy]
+    resources :inventory_accesses, only: [:create, :destroy]
   end
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"

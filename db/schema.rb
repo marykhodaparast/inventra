@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_154725) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_14_162211) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_154725) do
     t.index ["user_id"], name: "index_inventories_on_user_id"
   end
 
+  create_table "inventory_accesses", force: :cascade do |t|
+    t.bigint "inventory_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id", "user_id"], name: "index_inventory_accesses_on_inventory_id_and_user_id", unique: true
+    t.index ["inventory_id"], name: "index_inventory_accesses_on_inventory_id"
+    t.index ["user_id"], name: "index_inventory_accesses_on_user_id"
+  end
+
   create_table "items", force: :cascade do |t|
     t.bigint "inventory_id", null: false
     t.bigint "category_id"
@@ -72,6 +82,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_154725) do
   add_foreign_key "categories", "inventories"
   add_foreign_key "custom_fields", "inventories"
   add_foreign_key "inventories", "users"
+  add_foreign_key "inventory_accesses", "inventories"
+  add_foreign_key "inventory_accesses", "users"
   add_foreign_key "items", "categories"
   add_foreign_key "items", "inventories"
 end

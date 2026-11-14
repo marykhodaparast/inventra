@@ -133,7 +133,7 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
-  assert_response :not_found
+  assert_redirected_to inventories_path
 end
 
 test "should not allow updating another user's custom field" do
@@ -159,7 +159,7 @@ test "should not allow updating another user's custom field" do
     }
   end
 
-  assert_response :not_found
+  assert_redirected_to inventories_path
 end
 
 test "should not allow deleting another user's custom field" do
@@ -183,7 +183,7 @@ test "should not allow deleting another user's custom field" do
     delete inventory_custom_field_url(other_inventory, custom_field)
   end
 
-  assert_response :not_found
+  assert_redirected_to inventories_path
   assert CustomField.exists?(custom_field.id)
 end
 end

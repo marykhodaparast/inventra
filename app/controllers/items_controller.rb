@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
-  before_action :require_login
   before_action :set_inventory
-  before_action :set_item, only: [ :show, :edit, :update, :destroy ]
+  before_action :require_write_access, only: [:new, :create, :edit, :update, :destroy]
+  before_action :set_item, only: [:show, :edit, :update, :destroy]
 
   def index
     @items = @inventory.items.order(created_at: :desc)
@@ -46,8 +46,19 @@ class ItemsController < ApplicationController
 
   private
 
+  def require_write_access
+  unless @inventory.writable_by?(current_user)
+    if current_user.nil?
+      redirect_to login_path, alert: "Please log in to continue."
+    else
+      redirect_to inventory_items_path(@inventory),
+                  alert: "You don't have permission to modify this inventory."
+    end
+  end
+  end
+
   def set_inventory
-    @inventory = current_user.inventories.find(params[:inventory_id])
+    @inventory = Inventory.find(params[:inventory_id])
   end
 
   def set_item

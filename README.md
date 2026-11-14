@@ -181,10 +181,10 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Implement inventory management
 - [x] Implement custom fields
 - [x] Implement custom inventory IDs
+- [x] Implement access permissions
 
 ### Upcoming
 
-- [ ] Implement access permissions
 - [ ] Implement search and collaboration features
 - [ ] Implement dashboard and statistics
 - [ ] Add responsive UI and themes

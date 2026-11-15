@@ -1,0 +1,84 @@
+
+<div class="container mt-4">
+  <h1>Search Results</h1>
+
+  <% if @query.blank? && @tag.nil? %>
+  <p>Please enter a search term or select a tag.</p>
+<% else %>
+  <% if @tag.present? %>
+    <p>
+      Inventories tagged with:
+      <strong><%= @tag.name %></strong>
+    </p>
+  <% else %>
+    <p>
+      Results for: <strong><%= @query %></strong>
+    </p>
+  <% end %>
+
+    <section class="mb-5">
+      <h2>Inventories</h2>
+
+      <% if @inventories.any? %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Custom ID</th>
+              <th>Description</th>
+              <th>Creator</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @inventories.each do |inventory| %>
+              <tr>
+                <td>
+                  <%= link_to inventory.name,
+                      inventory_items_path(inventory) %>
+                </td>
+                <td><%= inventory.custom_id %></td>
+                <td><%= inventory.description %></td>
+                <td><%= inventory.user.name %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No inventories found.</p>
+      <% end %>
+    </section>
+
+    <section>
+      <h2>Items</h2>
+
+      <% if @items.any? %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Inventory</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @items.each do |item| %>
+              <tr>
+                <td>
+                  <%= link_to item.name,
+                      inventory_item_path(item.inventory, item) %>
+                </td>
+                <td><%= item.description %></td>
+                <td>
+                  <%= link_to item.inventory.name,
+                      inventory_items_path(item.inventory) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No items found.</p>
+      <% end %>
+    </section>
+  <% end %>
+</div>

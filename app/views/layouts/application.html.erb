@@ -24,6 +24,18 @@
   </head>
 
   <body>
+
+<header class="app-header">
+  <%= form_with url: search_path, method: :get, local: true do |form| %>
+    <%= form.search_field :q,
+        value: params[:q],
+        placeholder: "Search inventories and items...",
+        aria: { label: "Search inventories and items" } %>
+
+    <%= form.submit "Search" %>
+  <% end %>
+</header>
+
   <% flash.each do |type, message| %>
     <div class="flash <%= type %>">
       <%= message %>

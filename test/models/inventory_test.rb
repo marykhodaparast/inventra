@@ -145,4 +145,21 @@ test "guest cannot write to public inventory" do
 
   assert_not inventory.writable_by?(nil)
 end
+test "search finds inventories by name, description, and custom id" do
+  user = User.create!(
+    name: "Search User",
+    email: "search@example.com",
+    password: "password123"
+  )
+
+  inventory = user.inventories.create!(
+    name: "Electronics",
+    description: "Contains electronic devices"
+  )
+
+  assert_includes Inventory.search("Electronics"), inventory
+  assert_includes Inventory.search("electronic"), inventory
+  assert_includes Inventory.search(inventory.custom_id), inventory
+  assert_not_includes Inventory.search("Nonexistent"), inventory
+end
 end

@@ -126,4 +126,26 @@ class ItemTest < ActiveSupport::TestCase
 
     assert_not item.custom_field_values.key?(foreign_field.id.to_s)
   end
+  test "search finds items by name and description" do
+  item = @inventory.items.create!(
+    name: "MacBook",
+    description: "Apple laptop"
+  )
+
+  assert_includes Item.search("MacBook"), item
+  assert_includes Item.search("Apple"), item
+  assert_not_includes Item.search("Nonexistent"), item
+end
+test "search finds items by category name" do
+  category = @inventory.categories.create!(
+    name: "Electronics"
+  )
+
+  item = @inventory.items.create!(
+    name: "MacBook",
+    category: category
+  )
+
+  assert_includes Item.search("Electronics"), item
+end
 end

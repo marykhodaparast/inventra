@@ -174,3 +174,48 @@
 
   <%= form.submit "Add Custom Field" %>
 <% end %>
+<hr>
+
+<section class="mt-4">
+  <h2>Tags</h2>
+
+  <%= form_with url: inventory_inventory_tags_path(@inventory),
+                method: :post do |form| %>
+    <div class="mb-3">
+      <%= form.label :tag_name, "Tag Name" %>
+      <%= form.text_field :tag_name,
+          class: "form-control",
+          placeholder: "Enter a tag name",
+          required: true %>
+    </div>
+
+    <%= form.submit "Add Tag", class: "btn btn-primary" %>
+  <% end %>
+
+  <% if @inventory.tags.any? %>
+    <table class="table table-striped mt-3">
+      <thead>
+        <tr>
+          <th>Tag</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @inventory.inventory_tags.includes(:tag).each do |inventory_tag| %>
+          <tr>
+            <td><%= inventory_tag.tag.name %></td>
+            <td>
+              <%= button_to "Remove",
+                  inventory_inventory_tag_path(@inventory, inventory_tag),
+                  method: :delete,
+                  class: "btn btn-danger btn-sm" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No tags added yet.</p>
+  <% end %>
+</section>

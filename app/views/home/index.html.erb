@@ -17,4 +17,88 @@
     <%= link_to "Log In", login_path %>
     <%= link_to "Sign Up", new_user_path %>
   <% end %>
+  <hr>
+
+<section class="mt-4">
+  <h2>Latest Inventories</h2>
+
+  <% if @latest_inventories.any? %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Creator</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @latest_inventories.each do |inventory| %>
+          <tr>
+            <td>
+              <%= link_to inventory.name,
+                  inventory_items_path(inventory) %>
+            </td>
+            <td><%= inventory.description %></td>
+            <td><%= inventory.user.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No inventories available yet.</p>
+  <% end %>
+</section>
+
+<hr>
+
+<section class="mt-4">
+  <h2>Popular Inventories</h2>
+
+  <% if @popular_inventories.any? %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Creator</th>
+          <th>Number of Items</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @popular_inventories.each do |inventory| %>
+          <tr>
+            <td>
+              <%= link_to inventory.name,
+                  inventory_items_path(inventory) %>
+            </td>
+            <td><%= inventory.user.name %></td>
+            <td><%= inventory.items_count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No inventories available yet.</p>
+  <% end %>
+</section>
+<hr>
+
+<section class="mt-4">
+  <h2>Tag Cloud</h2>
+
+  <% if @tags.any? %>
+    <div class="d-flex flex-wrap gap-2">
+      <% @tags.each do |tag| %>
+        <%= link_to search_path(tag: tag.name),
+            class: "badge bg-primary text-white text-decoration-none" do %>
+          <%= tag.name %>
+          (<%= tag.inventories_count %>)
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No tags available yet.</p>
+  <% end %>
+</section>
 </main>

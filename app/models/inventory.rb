@@ -6,6 +6,8 @@ class Inventory < ApplicationRecord
   has_many :users_with_write_access,
          through: :inventory_accesses,
          source: :user
+  has_many :inventory_tags, dependent: :destroy
+  has_many :tags, through: :inventory_tags
 
   belongs_to :user
 
@@ -22,6 +24,15 @@ class Inventory < ApplicationRecord
     return true if visibility == "public"
 
     users_with_write_access.exists?(id: user.id)
+  end
+
+  def self.search(query)
+  return none if query.blank?
+
+  where(
+    "search_vector @@ websearch_to_tsquery('english', ?)",
+    query
+  )
   end
 
   private

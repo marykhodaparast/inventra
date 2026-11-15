@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "/search", to: "search#index", as: :search
   namespace :admin do
     resources :users, only: [ :index, :update ]
   end
@@ -7,6 +8,7 @@ Rails.application.routes.draw do
     resources :custom_fields, only: [:create, :update, :destroy]
     resources :items, only: [:index, :new, :create, :show, :edit, :update, :destroy]
     resources :inventory_accesses, only: [:create, :destroy]
+    resources :inventory_tags, only: [:create, :destroy]
   end
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"

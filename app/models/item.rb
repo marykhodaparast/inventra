@@ -8,6 +8,18 @@ class Item < ApplicationRecord
   validate :category_belongs_to_inventory
   validate :custom_field_values_match_fields
 
+  def self.search(query)
+  return none if query.blank?
+
+  left_outer_joins(:category).where(
+    <<~SQL,
+      items.search_vector @@ websearch_to_tsquery('english', :query)
+      OR categories.search_vector @@ websearch_to_tsquery('english', :query)
+    SQL
+    query: query
+  )
+  end
+
   private
 
   def category_belongs_to_inventory

@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_many :inventories, dependent: :destroy
   has_many :inventory_accesses, dependent: :destroy
   has_many :writable_inventories, through: :inventory_accesses, source: :inventory
+  has_many :discussion_posts, dependent: :destroy
   has_secure_password
 
   before_validation :normalize_email

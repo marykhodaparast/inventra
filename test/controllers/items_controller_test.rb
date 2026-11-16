@@ -1,4 +1,3 @@
-
 require "test_helper"
 
 class ItemsControllerTest < ActionDispatch::IntegrationTest
@@ -501,5 +500,44 @@ test "should allow admin to create item in another user's inventory" do
 
   assert_equal "Admin Created Item", created_item.name
   assert_redirected_to inventory_item_path(other_inventory, created_item)
+end
+test "should display discussion posts with author and markdown" do
+  discussion_post = DiscussionPost.create!(
+    inventory: @inventory,
+    user: @user,
+    content: "Hello **Inventra**!"
+  )
+
+  get inventory_items_url(@inventory)
+
+  assert_response :success
+  assert_select "h2", "Discussion"
+  assert_select "turbo-frame#discussion_posts"
+
+  get inventory_discussion_posts_url(@inventory)
+
+  assert_response :success
+  assert_select "a[href=?]", user_path(@user), text: @user.name
+  assert_select "strong", "Inventra"
+  assert_includes response.body,
+                  discussion_post.created_at.strftime("%Y-%m-%d %H:%M")
+end
+
+test "should display discussion form for logged in user" do
+  get inventory_items_url(@inventory)
+
+  assert_response :success
+  assert_select "form[action=?]", inventory_discussion_posts_path(@inventory)
+  assert_select "textarea[name='discussion_post[content]']"
+end
+
+test "should not display discussion form for guest" do
+  delete logout_url
+
+  get inventory_items_url(@inventory)
+
+  assert_response :success
+  assert_select "form[action=?]", inventory_discussion_posts_path(@inventory), count: 0
+  assert_select "a[href=?]", login_path, text: "Log in"
 end
 end

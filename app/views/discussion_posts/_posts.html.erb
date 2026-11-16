@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "discussion_posts" do %>
+  <% if discussion_posts.any? %>
+    <% discussion_posts.each do |post| %>
+      <article>
+        <p>
+          <strong>
+            <%= link_to post.user.name, user_path(post.user) %>
+          </strong>
+
+          <small>
+            <%= time_tag post.created_at,
+                         post.created_at.strftime("%Y-%m-%d %H:%M") %>
+          </small>
+        </p>
+
+        <div>
+          <%= render_markdown(post.content) %>
+        </div>
+      </article>
+
+      <hr>
+    <% end %>
+  <% else %>
+    <p>No discussion messages yet.</p>
+  <% end %>
+<% end %>

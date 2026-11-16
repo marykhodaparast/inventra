@@ -3,8 +3,12 @@ class ItemsController < ApplicationController
   before_action :require_write_access, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_item, only: [:show, :edit, :update, :destroy]
 
-  def index
-    @items = @inventory.items.order(created_at: :desc)
+ def index
+  @items = @inventory.items.order(created_at: :desc)
+
+  @discussion_posts = @inventory.discussion_posts
+                                 .includes(:user)
+                                 .order(created_at: :asc)
   end
 
   def new

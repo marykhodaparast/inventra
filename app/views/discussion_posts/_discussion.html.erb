@@ -1,0 +1,28 @@
+<section id="discussion">
+  <h2>Discussion</h2>
+
+  <%= turbo_frame_tag "discussion_posts",
+                    src: inventory_discussion_posts_path(@inventory),
+                    loading: :eager,
+                    data: { controller: "discussion-refresh" } do %>
+  <p>Loading discussion...</p>
+<% end %>
+
+  <% if current_user.present? %>
+    <h3>Write a message</h3>
+
+    <%= form_with model: [@inventory, @inventory.discussion_posts.new] do |form| %>
+      <div>
+        <%= form.label :content, "Message" %>
+        <%= form.text_area :content, rows: 5, required: true %>
+      </div>
+
+      <%= form.submit "Post Message" %>
+    <% end %>
+  <% else %>
+    <p>
+      <%= link_to "Log in", login_path %>
+      to join the discussion.
+    </p>
+  <% end %>
+</section>

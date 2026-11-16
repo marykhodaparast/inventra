@@ -8,6 +8,7 @@ class Inventory < ApplicationRecord
          source: :user
   has_many :inventory_tags, dependent: :destroy
   has_many :tags, through: :inventory_tags
+  has_many :discussion_posts, dependent: :destroy
 
   belongs_to :user
 

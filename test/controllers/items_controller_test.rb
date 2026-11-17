@@ -36,6 +36,30 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Laptop"
   end
 
+  test "should display inventory statistics" do
+  @inventory.custom_fields.create!(
+    name: "Author",
+    field_type: "text"
+  )
+
+  DiscussionPost.create!(
+    inventory: @inventory,
+    user: @user,
+    content: "Inventory discussion"
+  )
+
+  get inventory_items_url(@inventory)
+
+  assert_response :success
+
+  assert_select "#inventory-statistics" do
+    assert_select "li", "Total Items: 1"
+    assert_select "li", "Total Categories: 1"
+    assert_select "li", "Total Custom Fields: 1"
+    assert_select "li", "Total Discussion Posts: 1"
+  end
+end
+
   test "should display new item form" do
     get new_inventory_item_url(@inventory)
 

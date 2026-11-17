@@ -185,10 +185,10 @@ Sensitive environment variable values are not stored in the GitHub repository.
 - [x] Implement full-text search
 - [x] Implement inventory tags and tag cloud
 - [x] Implement collaboration features (Discussion)
+- [x] Implement dashboard and statistics
 
 ### Upcoming
 
-- [ ] Implement dashboard and statistics
 - [ ] Add responsive UI and themes
 - [ ] Complete testing and final deployment
 

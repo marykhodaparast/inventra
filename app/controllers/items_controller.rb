@@ -6,6 +6,13 @@ class ItemsController < ApplicationController
  def index
   @items = @inventory.items.order(created_at: :desc)
 
+  @statistics = {
+    total_items: @inventory.items.count,
+    total_categories: @inventory.categories.count,
+    total_custom_fields: @inventory.custom_fields.count,
+    total_discussion_posts: @inventory.discussion_posts.count
+  }
+
   @discussion_posts = @inventory.discussion_posts
                                  .includes(:user)
                                  .order(created_at: :asc)

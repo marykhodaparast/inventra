@@ -1,5 +1,16 @@
 <h1><%= @inventory.name %> - Items</h1>
 
+<section id="inventory-statistics">
+  <h2>Inventory Statistics</h2>
+
+  <ul>
+    <li>Total Items: <%= @statistics[:total_items] %></li>
+    <li>Total Categories: <%= @statistics[:total_categories] %></li>
+    <li>Total Custom Fields: <%= @statistics[:total_custom_fields] %></li>
+    <li>Total Discussion Posts: <%= @statistics[:total_discussion_posts] %></li>
+  </ul>
+</section>
+
 <%= link_to "Add New Item", new_inventory_item_path(@inventory) %>
 
 <% if @items.any? %>

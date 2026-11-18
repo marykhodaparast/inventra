@@ -30,11 +30,11 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should display inventory items" do
-    get inventory_items_url(@inventory)
+  get inventory_items_url(@inventory)
 
-    assert_response :success
-    assert_select "h2", "Laptop"
-  end
+  assert_response :success
+  assert_select "a[href=?]", inventory_item_path(@inventory, @item), text: "Laptop"
+end
 
   test "should display inventory statistics" do
   @inventory.custom_fields.create!(
@@ -96,7 +96,7 @@ end
   get inventory_items_url(@inventory)
 
   assert_response :success
-  assert_select "h2", "Laptop"
+  assert_select "a[href=?]", inventory_item_path(@inventory, @item), text: "Laptop"
 end
 
   test "should allow user to view another user's inventory items" do
@@ -111,15 +111,15 @@ end
     name: "Other Inventory"
   )
 
-  other_inventory.items.create!(
+  other_item = other_inventory.items.create!(
     name: "Other Laptop"
   )
 
   get inventory_items_url(other_inventory)
 
   assert_response :success
-  assert_select "h2", "Other Laptop"
-  end
+  assert_select "a[href=?]", inventory_item_path(other_inventory, other_item), text: "Other Laptop"
+end
   test "should not allow user to view item from another inventory" do
     other_user = User.create!(
       name: "Other User",

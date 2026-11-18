@@ -8,3 +8,298 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+/* Global layout */
+
+/* Theme colors */
+:root {
+    --bg-color: #f8fafc;
+    --surface-color: #ffffff;
+    --text-color: #1f2937;
+    --muted-text-color: #334155;
+    --border-color: #e2e8f0;
+    --table-header-color: #f1f5f9;
+    --input-border-color: #cbd5e1;
+    --primary-color: #2563eb;
+}
+
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-color: #f1f5f9;
+    --muted-text-color: #cbd5e1;
+    --border-color: #334155;
+    --table-header-color: #273449;
+    --input-border-color: #475569;
+    --primary-color: #60a5fa;
+}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background: var(--bg-color);
+}
+
+main,
+body>.page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.app-header {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 24px;
+}
+
+/* Search bar */
+.app-header form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.app-header input[type="search"] {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 14px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    outline: none;
+}
+
+.app-header input[type="search"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.app-header input[type="submit"] {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.app-header input[type="submit"]:hover {
+    background: #1d4ed8;
+}
+
+/* Tables */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.data-table,
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface-color);
+}
+
+.data-table th,
+.data-table td,
+.table th,
+.table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th,
+.table th {
+    background: var(--table-header-color);
+    color: var(--text-color);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Forms and buttons */
+input,
+textarea,
+select,
+button {
+    max-width: 100%;
+    font: inherit;
+}
+
+button,
+input[type="submit"] {
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    .data-table th,
+    .data-table td,
+    .table th,
+    .table td {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .app-header form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .app-header input[type="search"] {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* Main navigation */
+.main-navbar {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.navbar-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.nav-menu {
+    position: relative;
+}
+
+.nav-menu summary {
+    display: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--muted-text-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #2563eb;
+}
+
+.nav-logout {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.nav-logout:hover {
+    background: #dc2626;
+}
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+    .main-navbar {
+        align-items: flex-start;
+        padding: 14px;
+    }
+
+    .nav-menu summary {
+        display: block;
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .nav-menu summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        z-index: 10;
+        min-width: 180px;
+        padding: 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-menu[open] .nav-links {
+        display: flex;
+    }
+
+    .nav-logout {
+        width: 100%;
+    }
+}
+
+/* Theme-aware form controls */
+input,
+textarea,
+select {
+    color: var(--text-color);
+    background: var(--surface-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+}

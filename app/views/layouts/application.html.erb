@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="<%= logged_in? ? current_user.theme : 'light' %>">
   <head>
     <title><%= content_for(:title) || "Inventra" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -22,19 +22,46 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
+<body>
+  <nav class="main-navbar">
+    <%= link_to "Inventra", root_path, class: "navbar-brand" %>
 
-  <body>
+    <details class="nav-menu" open>
+      <summary>Menu</summary>
 
-<header class="app-header">
-  <%= form_with url: search_path, method: :get, local: true do |form| %>
-    <%= form.search_field :q,
-        value: params[:q],
-        placeholder: "Search inventories and items...",
-        aria: { label: "Search inventories and items" } %>
+      <div class="nav-links">
+        <%= link_to "Home", root_path %>
+        <%= link_to "Inventories", inventories_path %>
 
-    <%= form.submit "Search" %>
-  <% end %>
-</header>
+        <% if logged_in? %>
+          <%= link_to "My Profile", profile_path %>
+
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_users_path %>
+          <% end %>
+
+          <%= button_to "Log Out",
+              logout_path,
+              method: :delete,
+              class: "nav-logout" %>
+        <% else %>
+          <%= link_to "Log In", login_path %>
+          <%= link_to "Sign Up", new_user_path %>
+        <% end %>
+      </div>
+    </details>
+  </nav>
+
+  <header class="app-header">
+    <%= form_with url: search_path, method: :get, local: true do |form| %>
+      <%= form.search_field :q,
+          value: params[:q],
+          placeholder: "Search inventories and items...",
+          aria: { label: "Search inventories and items" } %>
+
+      <%= form.submit "Search" %>
+    <% end %>
+  </header>
 
   <% flash.each do |type, message| %>
     <div class="flash <%= type %>">

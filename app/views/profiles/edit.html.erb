@@ -1,6 +1,6 @@
 <h1>Edit My Profile</h1>
 
-<%= form_with model: @user, url: profile_path, method: :patch do |form| %>
+<%= form_with model: @user, url: profile_path, method: :patch, data: { turbo: false } do |form| %>
   <div>
     <%= form.label :name %>
     <%= form.text_field :name %>
@@ -20,6 +20,11 @@
     <%= form.label :avatar_url %>
     <%= form.url_field :avatar_url %>
   </div>
+  <div>
+  <%= form.label :theme, "Appearance" %>
+  <%= form.select :theme,
+      [["Light", "light"], ["Dark", "dark"]] %>
+</div>
 
   <%= form.submit "Save Changes" %>
 <% end %>

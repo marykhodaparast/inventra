@@ -111,24 +111,80 @@ end
     assert_equal "My Inventory", inventory.name
     assert_equal "Original description", inventory.description
   end
+  test "should delete inventory and its dependent records" do
+  inventory = @user.inventories.create!(
+    name: "Inventory to Delete"
+  )
 
-  test "should delete inventory" do
-    inventory = @user.inventories.create!(
-      name: "Inventory to Delete"
-    )
+  category = inventory.categories.create!(
+    name: "Books"
+  )
 
-    post login_url, params: {
-      email: @user.email,
-      password: "Secret123!"
+  custom_field = inventory.custom_fields.create!(
+    name: "Author",
+    field_type: "text"
+  )
+
+  item = inventory.items.create!(
+    name: "Ruby Book",
+    category: category,
+    custom_field_values: {
+      custom_field.id.to_s => "John"
     }
+  )
 
-    assert_difference("Inventory.count", -1) do
-      delete inventory_url(inventory)
-    end
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-delete-inventory@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
 
-    assert_redirected_to inventories_path
-    assert_not Inventory.exists?(inventory.id)
+  inventory.inventory_accesses.create!(user: other_user)
+
+  tag = Tag.create!(name: "technology")
+  inventory.inventory_tags.create!(tag: tag)
+
+  discussion_post = DiscussionPost.create!(
+    inventory: inventory,
+    user: @user,
+    content: "Inventory discussion"
+  )
+
+  post login_url, params: {
+    email: @user.email,
+    password: "Secret123!"
+  }
+
+  assert_difference(
+    {
+      "Inventory.count" => -1,
+      "Item.count" => -1,
+      "Category.count" => -1,
+      "CustomField.count" => -1,
+      "InventoryAccess.count" => -1,
+      "InventoryTag.count" => -1,
+      "DiscussionPost.count" => -1
+    }
+  ) do
+    delete inventory_url(inventory)
   end
+
+  assert_redirected_to inventories_path
+
+  assert_not Inventory.exists?(inventory.id)
+  assert_not Item.exists?(item.id)
+  assert_not Category.exists?(category.id)
+  assert_not CustomField.exists?(custom_field.id)
+  assert_not InventoryAccess.exists?(inventory_id: inventory.id)
+  assert_not InventoryTag.exists?(inventory_id: inventory.id)
+  assert_not DiscussionPost.exists?(discussion_post.id)
+
+  assert User.exists?(@user.id)
+  assert User.exists?(other_user.id)
+  assert Tag.exists?(tag.id)
+end
+
 
   test "should not allow user to edit another user's inventory" do
     other_user = User.create!(

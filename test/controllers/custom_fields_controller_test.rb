@@ -294,6 +294,35 @@ end
     assert_not CustomField.exists?(custom_field.id)
   end
 
+  test "should remove custom field values from items when custom field is deleted" do
+  custom_field = @inventory.custom_fields.create!(
+    name: "Author",
+    field_type: "text"
+  )
+
+  item_one = @inventory.items.create!(
+    name: "Book One",
+    custom_field_values: {
+      custom_field.id.to_s => "John"
+    }
+  )
+
+  item_two = @inventory.items.create!(
+    name: "Book Two",
+    custom_field_values: {
+      custom_field.id.to_s => "Jane"
+    }
+  )
+
+  delete inventory_custom_field_url(@inventory, custom_field)
+
+  assert_redirected_to edit_inventory_path(@inventory)
+  assert_not CustomField.exists?(custom_field.id)
+
+  assert_empty item_one.reload.custom_field_values
+  assert_empty item_two.reload.custom_field_values
+end
+
   test "should not create custom field with blank name" do
     assert_no_difference("CustomField.count") do
       post inventory_custom_fields_url(@inventory), params: {

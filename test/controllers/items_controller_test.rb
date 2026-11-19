@@ -60,6 +60,65 @@ end
   end
 end
 
+
+test "should display zero statistics for an empty inventory" do
+  empty_inventory = @user.inventories.create!(
+    name: "Empty Inventory"
+  )
+
+  get inventory_items_url(empty_inventory)
+
+  assert_response :success
+
+  assert_select "#inventory-statistics" do
+    assert_select "li", "Total Items: 0"
+    assert_select "li", "Total Categories: 0"
+    assert_select "li", "Total Custom Fields: 0"
+    assert_select "li", "Total Discussion Posts: 0"
+  end
+end
+
+
+test "statistics should only include records from the current inventory" do
+  another_inventory = @user.inventories.create!(
+    name: "Another Inventory"
+  )
+
+  another_category = another_inventory.categories.create!(
+    name: "Books"
+  )
+
+  another_inventory.items.create!(
+    name: "Ruby Book",
+    description: "Rails programming",
+    category: another_category
+  )
+
+  another_inventory.custom_fields.create!(
+    name: "Publisher",
+    field_type: "text"
+  )
+
+  DiscussionPost.create!(
+    inventory: another_inventory,
+    user: @user,
+    content: "Another inventory discussion"
+  )
+
+  get inventory_items_url(@inventory)
+
+  assert_response :success
+
+  assert_select "#inventory-statistics" do
+    assert_select "li", "Total Items: 1"
+    assert_select "li", "Total Categories: 1"
+    assert_select "li", "Total Custom Fields: 0"
+    assert_select "li", "Total Discussion Posts: 0"
+  end
+end
+
+
+
   test "should display new item form" do
     get new_inventory_item_url(@inventory)
 

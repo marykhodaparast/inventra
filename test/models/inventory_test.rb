@@ -42,6 +42,23 @@ class InventoryTest < ActiveSupport::TestCase
 
     assert_not_equal first_inventory.custom_id, second_inventory.custom_id
   end
+  test "preserves custom id when inventory is updated" do
+  user = User.create!(
+    name: "Update ID User",
+    email: "update-id@example.com",
+    password: "password123"
+  )
+
+  inventory = user.inventories.create!(
+    name: "Original Inventory"
+  )
+
+  original_custom_id = inventory.custom_id
+
+  inventory.update!(name: "Updated Inventory")
+
+  assert_equal original_custom_id, inventory.reload.custom_id
+  end
 
   test "inventory owner can write" do
   user = User.create!(
@@ -161,5 +178,39 @@ test "search finds inventories by name, description, and custom id" do
   assert_includes Inventory.search("electronic"), inventory
   assert_includes Inventory.search(inventory.custom_id), inventory
   assert_not_includes Inventory.search("Nonexistent"), inventory
+end
+test "generates custom id correctly for ids longer than six digits" do
+  user = User.create!(
+    name: "Long ID User",
+    email: "long-id@example.com",
+    password: "password123"
+  )
+
+  inventory = user.inventories.build(
+    name: "Long ID Inventory"
+  )
+
+  inventory.define_singleton_method(:id) { 1_234_567 }
+
+  inventory.send(:generate_custom_id)
+
+  assert_equal "INV-1234567", inventory.custom_id
+end
+
+test "does not overwrite an existing custom id" do
+  user = User.create!(
+    name: "Existing ID User",
+    email: "existing-id@example.com",
+    password: "password123"
+  )
+
+  inventory = user.inventories.build(
+    name: "Existing ID Inventory",
+    custom_id: "MY-CUSTOM-ID"
+  )
+
+  inventory.save!
+
+  assert_equal "MY-CUSTOM-ID", inventory.custom_id
 end
 end

@@ -142,4 +142,40 @@ class InventoryAccessesControllerTest < ActionDispatch::IntegrationTest
       }
     end
   end
+  test "revoking access from one inventory preserves access to another" do
+  second_inventory = @owner.inventories.create!(
+    name: "Second Inventory"
+  )
+
+  first_access = @inventory.inventory_accesses.create!(
+    user: @target_user
+  )
+
+  second_access = second_inventory.inventory_accesses.create!(
+    user: @target_user
+  )
+
+  assert_difference("InventoryAccess.count", -1) do
+    delete inventory_inventory_access_url(@inventory, first_access)
+  end
+
+  assert_not InventoryAccess.exists?(first_access.id)
+  assert InventoryAccess.exists?(second_access.id)
+  assert second_inventory.users_with_write_access.exists?(@target_user.id)
+end
+test "owner cannot revoke access belonging to another inventory" do
+  second_inventory = @owner.inventories.create!(
+    name: "Second Inventory"
+  )
+
+  access = second_inventory.inventory_accesses.create!(
+    user: @target_user
+  )
+
+  assert_no_difference("InventoryAccess.count") do
+    delete inventory_inventory_access_url(@inventory, access)
+  end
+
+  assert InventoryAccess.exists?(access.id)
+end
 end

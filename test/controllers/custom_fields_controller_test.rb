@@ -19,6 +19,75 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
+  test "guest cannot create custom field" do
+  delete logout_url
+
+  assert_no_difference("CustomField.count") do
+    post inventory_custom_fields_url(@inventory), params: {
+      custom_field: {
+        name: "Guest Field",
+        field_type: "text"
+      }
+    }
+  end
+
+  assert_redirected_to login_path
+end
+
+test "guest cannot delete custom field" do
+  custom_field = @inventory.custom_fields.create!(
+    name: "Protected Field",
+    field_type: "text"
+  )
+
+  delete logout_url
+
+  assert_no_difference("CustomField.count") do
+    delete inventory_custom_field_url(@inventory, custom_field)
+  end
+
+  assert_redirected_to login_path
+  assert CustomField.exists?(custom_field.id)
+end
+
+test "should allow admin to destroy custom field in another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin-custom-field-delete@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-custom-field-owner@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  custom_field = other_inventory.custom_fields.create!(
+    name: "Admin Field",
+    field_type: "text"
+  )
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  assert_difference("CustomField.count", -1) do
+    delete inventory_custom_field_url(other_inventory, custom_field)
+  end
+
+  assert_redirected_to edit_inventory_path(other_inventory)
+  assert_not CustomField.exists?(custom_field.id)
+end
+
   test "should create custom field" do
     assert_difference("CustomField.count", 1) do
       post inventory_custom_fields_url(@inventory), params: {
@@ -36,6 +105,162 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "text", custom_field.field_type
     assert_equal 1, custom_field.position
   end
+
+  test "should not allow user with write access to create custom field" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-custom-fields@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_no_difference("CustomField.count") do
+    post inventory_custom_fields_url(other_inventory), params: {
+      custom_field: { name: "Unauthorized Field", field_type: "text" }
+    }
+  end
+
+  assert_redirected_to inventories_path
+end
+
+test "should not allow user with write access to update custom field" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-custom-fields-update@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  custom_field = other_inventory.custom_fields.create!(
+    name: "Original Field",
+    field_type: "text"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  patch inventory_custom_field_url(other_inventory, custom_field), params: {
+    custom_field: { name: "Changed Field" }
+  }
+
+  assert_equal "Original Field", custom_field.reload.name
+  assert_redirected_to inventories_path
+end
+
+test "should not allow user with write access to delete custom field" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-custom-fields-delete@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  custom_field = other_inventory.custom_fields.create!(
+    name: "Original Field",
+    field_type: "text"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_no_difference("CustomField.count") do
+    delete inventory_custom_field_url(other_inventory, custom_field)
+  end
+
+  assert custom_field.reload.persisted?
+  assert_redirected_to inventories_path
+end
+
+test "should allow admin to create custom field in another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin-custom-fields@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-owner@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  post logout_url
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  assert_difference("CustomField.count", 1) do
+    post inventory_custom_fields_url(other_inventory), params: {
+      custom_field: {
+        name: "Admin Field",
+        field_type: "text"
+      }
+    }
+  end
+
+  assert_equal "Admin Field", other_inventory.custom_fields.last.name
+end
+
+test "should allow admin to update custom field in another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin-update-custom-fields@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-update-owner@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  custom_field = other_inventory.custom_fields.create!(
+    name: "Original Field",
+    field_type: "text"
+  )
+
+  post logout_url
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  patch inventory_custom_field_url(other_inventory, custom_field), params: {
+    custom_field: { name: "Updated by Admin" }
+  }
+
+  assert_equal "Updated by Admin", custom_field.reload.name
+end
+
 
   test "should update custom field" do
     custom_field = @inventory.custom_fields.create!(

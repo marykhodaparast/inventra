@@ -487,6 +487,55 @@ test "should allow user with write access to create item" do
   assert_equal "Shared Item", created_item.name
   assert_redirected_to inventory_item_path(other_inventory, created_item)
 end
+test "should allow user with write access to update item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  other_item = other_inventory.items.create!(
+    name: "Original Item"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  patch inventory_item_url(other_inventory, other_item), params: {
+    item: { name: "Updated Item" }
+  }
+
+  assert_equal "Updated Item", other_item.reload.name
+  assert_redirected_to inventory_item_path(other_inventory, other_item)
+end
+test "should allow user with write access to delete item" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  other_item = other_inventory.items.create!(
+    name: "Item to Delete"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_difference("Item.count", -1) do
+    delete inventory_item_url(other_inventory, other_item)
+  end
+
+  assert_redirected_to inventory_items_path(other_inventory)
+end
 test "should allow admin to create item in another user's inventory" do
   admin = User.create!(
     name: "Admin User",

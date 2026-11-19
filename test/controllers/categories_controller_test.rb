@@ -18,7 +18,67 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
       password: "Secret123!"
     }
   end
+  test "guest cannot create category" do
+  delete logout_url
 
+  assert_no_difference("Category.count") do
+    post inventory_categories_url(@inventory), params: {
+      category: { name: "Guest Category" }
+    }
+  end
+
+  assert_redirected_to login_path
+end
+
+test "guest cannot delete category" do
+  category = @inventory.categories.create!(name: "Protected Category")
+
+  delete logout_url
+
+  assert_no_difference("Category.count") do
+    delete inventory_category_url(@inventory, category)
+  end
+
+  assert_redirected_to login_path
+  assert Category.exists?(category.id)
+end
+
+test "should allow admin to destroy category in another user's inventory" do
+  admin = User.create!(
+    name: "Admin User",
+    email: "admin-category-delete@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!",
+    role: "admin"
+  )
+
+  other_user = User.create!(
+    name: "Other User",
+    email: "other-category-owner@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Other Inventory"
+  )
+
+  category = other_inventory.categories.create!(
+    name: "Admin Category"
+  )
+
+  post login_url, params: {
+    email: admin.email,
+    password: "Secret123!"
+  }
+
+  assert_difference("Category.count", -1) do
+    delete inventory_category_url(other_inventory, category)
+  end
+
+  assert_redirected_to edit_inventory_path(other_inventory)
+  assert_not Category.exists?(category.id)
+end
   test "should create category" do
     assert_difference("Category.count", 1) do
       post inventory_categories_url(@inventory), params: {
@@ -72,6 +132,75 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to inventories_path
   end
+
+  test "should not allow user with write access to create category" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_no_difference("Category.count") do
+    post inventory_categories_url(other_inventory), params: {
+      category: { name: "Unauthorized Category" }
+    }
+  end
+
+  assert_redirected_to inventories_path
+end
+
+test "should not allow user with write access to update category" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  category = other_inventory.categories.create!(name: "Original Category")
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  patch inventory_category_url(other_inventory, category), params: {
+    category: { name: "Updated Category" }
+  }
+
+  assert_equal "Original Category", category.reload.name
+  assert_redirected_to inventories_path
+end
+
+test "should not allow user with write access to delete category" do
+  other_user = User.create!(
+    name: "Other User",
+    email: "other@example.com",
+    password: "Secret123!",
+    password_confirmation: "Secret123!"
+  )
+
+  other_inventory = other_user.inventories.create!(
+    name: "Private Inventory"
+  )
+
+  category = other_inventory.categories.create!(name: "Protected Category")
+  other_inventory.inventory_accesses.create!(user: @user)
+
+  assert_no_difference("Category.count") do
+    delete inventory_category_url(other_inventory, category)
+  end
+
+  assert Category.exists?(category.id)
+  assert_redirected_to inventories_path
+end
 
   test "should not create category with duplicate name in the same inventory" do
     @inventory.categories.create!(name: "Books")

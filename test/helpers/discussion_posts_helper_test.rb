@@ -13,4 +13,12 @@ class DiscussionPostsHelperTest < ActionView::TestCase
     assert_not_includes result, "<script>"
     assert_not_includes result, "alert"
   end
+  test "does not allow javascript URLs in markdown links" do
+  result = render_markdown(
+    "[Click me](javascript:alert('XSS'))"
+  )
+
+  assert_not_includes result, "javascript:"
+  assert_not_includes result, "alert"
+end
 end

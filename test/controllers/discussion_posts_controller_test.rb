@@ -64,4 +64,41 @@ class DiscussionPostsControllerTest < ActionDispatch::IntegrationTest
   assert_select "strong", "Inventra"
   assert_includes response.body, @writer.name
 end
+test "index displays newly created discussion posts on subsequent requests" do
+  get inventory_discussion_posts_url(@inventory)
+
+  assert_response :success
+  assert_includes response.body, "No discussion messages yet."
+
+  DiscussionPost.create!(
+    inventory: @inventory,
+    user: @writer,
+    content: "A newly added message"
+  )
+
+  get inventory_discussion_posts_url(@inventory)
+
+  assert_response :success
+  assert_includes response.body, "A newly added message"
+end
+
+test "index does not display posts from other inventories" do
+  another_inventory = Inventory.create!(
+    name: "Another Inventory",
+    visibility: "private",
+    user: @owner
+  )
+
+  DiscussionPost.create!(
+    inventory: another_inventory,
+    user: @writer,
+    content: "Secret message from another inventory"
+  )
+
+  get inventory_discussion_posts_url(@inventory)
+
+  assert_response :success
+  assert_select "article", 0
+  assert_not_includes response.body, "Secret message from another inventory"
+end
 end

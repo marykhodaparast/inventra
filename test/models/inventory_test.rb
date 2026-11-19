@@ -213,4 +213,27 @@ test "does not overwrite an existing custom id" do
 
   assert_equal "MY-CUSTOM-ID", inventory.custom_id
 end
+test "destroys associated discussion posts when inventory is destroyed" do
+  user = User.create!(
+    name: "Discussion Owner",
+    email: "discussion-owner@example.com",
+    password: "Secret123!"
+  )
+
+  inventory = Inventory.create!(
+    name: "Discussion Inventory",
+    visibility: "private",
+    user: user
+  )
+
+  DiscussionPost.create!(
+    inventory: inventory,
+    user: user,
+    content: "This message should be deleted."
+  )
+
+  assert_difference "DiscussionPost.count", -1 do
+    inventory.destroy
+  end
+end
 end

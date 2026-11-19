@@ -60,4 +60,45 @@ test "regular user cannot access admin users page" do
 
   assert_redirected_to root_path
 end
+test "admin cannot assign an invalid role" do
+  user = User.create!(
+    name: "Regular User",
+    email: "user@example.com",
+    password: "password123"
+  )
+
+  patch admin_user_path(user), params: {
+    user: { role: "superadmin" }
+  }
+
+  assert_equal "user", user.reload.role
+  assert_redirected_to admin_users_path
+end
+test "regular user cannot update user roles" do
+  regular_user = User.create!(
+    name: "Regular User",
+    email: "regular@example.com",
+    password: "password123"
+  )
+
+  target_user = User.create!(
+    name: "Target User",
+    email: "target@example.com",
+    password: "password123"
+  )
+
+  delete logout_path
+
+  post login_path, params: {
+    email: regular_user.email,
+    password: "password123"
+  }
+
+  patch admin_user_path(target_user), params: {
+    user: { role: "admin" }
+  }
+
+  assert_equal "user", target_user.reload.role
+  assert_redirected_to root_path
+end
 end

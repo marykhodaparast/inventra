@@ -55,4 +55,16 @@ class TagTest < ActiveSupport::TestCase
     assert_not tag.valid?
     assert_includes tag.errors[:name], "can't be blank"
   end
+  test "deleting an inventory preserves shared tags and other inventory associations" do
+  tag = Tag.create!(name: "Technology")
+
+  @first_inventory.tags << tag
+  @second_inventory.tags << tag
+
+  @first_inventory.destroy!
+
+  assert Tag.exists?(tag.id)
+  assert_equal [ @second_inventory.id ], tag.reload.inventories.pluck(:id)
+  assert_equal [ tag.id ], @second_inventory.reload.tags.pluck(:id)
+end
 end

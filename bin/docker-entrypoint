@@ -1,8 +1,11 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
 # Prepare the database before starting the Rails server
-if [[ " $* " == *" ./bin/rails server "* ]]; then
+if [[ "$*" == *"./bin/rails server"* ]]; then
+  echo "==> Preparing production database..."
   ./bin/rails db:prepare
+  echo "==> Database preparation completed successfully."
 fi
 
-exec "${@}"
+exec "$@"

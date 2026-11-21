@@ -4,79 +4,80 @@
 
 Inventra is a web-based inventory management application built with Ruby on Rails.
 
-The application allows users to create and manage customizable inventories, define their own fields, and add items based on those field definitions.
+It provides a flexible platform for creating and managing customizable inventories, defining custom fields, organizing items, and collaborating with other users.
 
-The goal is to provide a flexible platform for managing different types of resources, such as office equipment, library books, and company documents.
+Inventra can be used to manage different types of resources, such as office equipment, library books, and company documents.
 
-This project is being developed as the final project for the Ruby on Rails course.
+This project was developed as the final project for a Ruby on Rails course.
 
 ## Live Demo
 
-**Live Application:** [https://inventra-d63b5.containers.snapdeploy.app](https://inventra-d63b5.containers.snapdeploy.app)
+**Live Application:** [https://inventra.ethiodeploy.app/](https://inventra.ethiodeploy.app/)
 
-The initial version of Inventra is successfully deployed and publicly accessible.
+The application is deployed and publicly accessible.
 
 ## Technology Stack
 
-- **Backend:** Ruby on Rails
-- **Programming Language:** Ruby
+- **Backend:** Ruby on Rails 8.1
+- **Programming Language:** Ruby 4.0
 - **Database:** PostgreSQL
 - **Production Database:** Neon
 - **ORM:** ActiveRecord
 - **Frontend:** HTML, CSS, JavaScript
-- **CSS Framework:** Bootstrap (planned)
 - **Version Control:** Git and GitHub
-- **Deployment:** SnapDeploy
 - **Containerization:** Docker
+- **Deployment:** EthioDeploy
 
-## Planned Features
+## Implemented Features
 
 ### User Management
 - User registration and authentication
-- Google and other external account authentication
-- User roles and administrator management
 - User profiles
+- User roles and administrator management
 
 ### Inventory Management
 - Create, edit, and delete inventories
-- Custom inventory settings
 - Inventory categories and tags
 - Public and private inventories
-- User-based access permissions
+- User-based inventory access permissions
 
 ### Custom Fields
 - Define custom fields for inventory items
-- Support text, long text, numeric, document/image link, and boolean fields
+- Support different field types
 - Reorder custom fields
 - Dynamically generate item forms based on field definitions
 
 ### Custom Inventory IDs
-- Automatically generate sequential inventory IDs (e.g. INV-000001)
+- Automatically generate sequential inventory IDs
 - Ensure database-level uniqueness
-- Display custom IDs in inventory lists and edit pages
+- Display custom IDs in inventory views
 
 ### Items
 - Create, view, edit, and delete inventory items
-- Display items in sortable and filterable tables
-- Like items
+- Sortable and searchable item listings
 
 ### Collaboration
 - Inventory discussion boards
 - Markdown support
-- Automatic discussion updates
+- Discussion updates
 - Optimistic locking for concurrent edits
 
 ### Search and Dashboard
 - Full-text search
 - Latest inventories
-- Most popular inventories
+- Popular inventories
 - Tag cloud
 - Inventory statistics
 
 ### User Interface
-- English and a second UI language
+- Responsive design
 - Light and dark themes
-- Responsive design for desktop and mobile devices
+
+## Planned Features
+
+- Google and other external account authentication
+- Additional UI language support
+- Further UI and UX improvements
 
 ## Local Development Setup
 
@@ -90,16 +91,14 @@ Make sure the following tools are installed:
 - PostgreSQL
 - Git
 
-### Installation
-
-Clone the repository:
+### Clone the Repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/marykhodaparast/inventra.git
 cd inventra
 ```
 
-Install dependencies:
+### Install Dependencies
 
 ```bash
 bundle install
@@ -107,9 +106,9 @@ bundle install
 
 ### Configure Local PostgreSQL Credentials
 
-The local database credentials are provided through environment variables.
+Local database credentials are provided through environment variables.
 
-To enter your PostgreSQL password without displaying it while typing, run:
+To enter your PostgreSQL password without displaying it while typing:
 
 ```bash
 printf "PostgreSQL password: " ; read -s INVENTRA_DATABASE_PASSWORD ; echo ; export INVENTRA_DATABASE_PASSWORD
@@ -118,51 +117,67 @@ printf "PostgreSQL password: " ; read -s INVENTRA_DATABASE_PASSWORD ; echo ; exp
 Enter your PostgreSQL password when prompted.
 
 **Important:**
-- Run this command in the same terminal session where you will execute Rails database commands.
+- Run this command in the same terminal session where you execute Rails database commands.
 - The password is stored only in the current shell session.
 - Run the command again when opening a new terminal session.
-- Make sure `config/database.yml` reads the password from `INVENTRA_DATABASE_PASSWORD`.
+- Ensure `config/database.yml` reads the password from `INVENTRA_DATABASE_PASSWORD`.
 - Never commit database passwords or other sensitive credentials to GitHub.
 
-Create and migrate the database:
+### Prepare the Database
 
 ```bash
 bin/rails db:create
 bin/rails db:migrate
 ```
 
-Start the Rails server:
+### Start the Rails Server
 
 ```bash
 bin/rails server
 ```
 
-Open the application in your browser:
+Open the application at:
 
 [http://localhost:3000](http://localhost:3000)
 
-## Deployment
+## Production Deployment
 
-Inventra is deployed using SnapDeploy, with PostgreSQL hosted on Neon.
+Inventra is deployed using **EthioDeploy**, with PostgreSQL hosted on **Neon**.
+
+### Docker Configuration
+
+- **Dockerfile Path:** `Dockerfile`
+- The project uses its Dockerfile and Docker entrypoint for container initialization.
 
 ### Production Start Command
 
 ```bash
-./bin/rails server -b 0.0.0.0 -p 3000
+bundle exec rails db:prepare && bundle exec bin/rails server -b 0.0.0.0 -p ${PORT:-3000}
 ```
 
 ### Production Environment Variables
 
 The following environment variables are configured securely through the deployment platform:
 
-- `RAILS_ENV`
-- `DATABASE_URL`
-- `RAILS_MASTER_KEY`
-- `SECRET_KEY_BASE`
-- `RAILS_MAX_THREADS`
-- `WEB_CONCURRENCY`
+| Variable | Description |
+|---|---|
+| `RAILS_ENV` | Rails environment (`production`) |
+| `RAILS_MASTER_KEY` | Rails credentials encryption key |
+| `DATABASE_URL` | PostgreSQL connection URL |
+| `RAILS_LOG_TO_STDOUT` | Enables standard output logging |
+| `RAILS_SERVE_STATIC_FILES` | Enables static asset serving |
 
-Sensitive environment variable values are not stored in the GitHub repository.
+Sensitive environment variable values are never stored in the GitHub repository.
+
+### Database Migrations
+
+The production database is prepared using:
+
+```bash
+bundle exec rails db:prepare
+```
+
+This command prepares the database and applies pending migrations.
 
 ## Development Progress
 
@@ -170,27 +185,30 @@ Sensitive environment variable values are not stored in the GitHub repository.
 
 - [x] Create the Rails application
 - [x] Configure local PostgreSQL
-- [x] Set up the initial application homepage
-- [x] Configure the production database connection with Neon
+- [x] Set up the application homepage
+- [x] Configure Neon as the production database
 - [x] Configure the production environment
-- [x] Configure the Dockerfile for deployment
-- [x] Deploy the initial version successfully
+- [x] Configure Docker for deployment
+- [x] Deploy the application successfully
 - [x] Publish the live application
 - [x] Implement user authentication
 - [x] Implement user profiles and roles
 - [x] Implement inventory management
 - [x] Implement custom fields
 - [x] Implement custom inventory IDs
-- [x] Implement access permissions
+- [x] Implement inventory access permissions
 - [x] Implement full-text search
 - [x] Implement inventory tags and tag cloud
-- [x] Implement collaboration features (Discussion)
+- [x] Implement discussion features
 - [x] Implement dashboard and statistics
 - [x] Add responsive UI and themes
+- [x] Verify production database migrations
+- [x] Verify production registration and login
 
 ### Upcoming
 
-- [ ] Complete testing and final deployment
+- [ ] Final UI and UX improvements
+- [ ] Final testing and presentation preparation
 
 ## Author
 

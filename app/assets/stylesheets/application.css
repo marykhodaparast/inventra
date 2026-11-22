@@ -201,6 +201,12 @@ hr {
     gap: 22px;
 }
 
+@media (min-width: 769px) {
+    .nav-menu:not([open])>.nav-links {
+        display: flex;
+    }
+}
+
 .nav-links a {
     color: var(--muted-text-color);
     font-size: 0.95rem;

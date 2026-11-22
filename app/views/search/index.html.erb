@@ -1,26 +1,41 @@
+<div class="page-heading">
+  <div>
+    <h1>Search Results</h1>
 
-<div class="container mt-4">
-  <h1>Search Results</h1>
+    <% if @query.blank? && @tag.nil? %>
+      <p>Search inventories and items or explore content by tag.</p>
+    <% elsif @tag.present? %>
+      <p>
+        Inventories and items tagged with:
+        <strong><%= @tag.name %></strong>
+      </p>
+    <% else %>
+      <p>
+        Results for:
+        <strong><%= @query %></strong>
+      </p>
+    <% end %>
+  </div>
+</div>
 
-  <% if @query.blank? && @tag.nil? %>
-  <p>Please enter a search term or select a tag.</p>
+<% if @query.blank? && @tag.nil? %>
+  <div class="empty-state search-empty-state">
+    <h2>Start your search</h2>
+    <p>Enter a search term in the search bar above or select a tag.</p>
+  </div>
 <% else %>
-  <% if @tag.present? %>
-    <p>
-      Inventories tagged with:
-      <strong><%= @tag.name %></strong>
-    </p>
-  <% else %>
-    <p>
-      Results for: <strong><%= @query %></strong>
-    </p>
-  <% end %>
 
-    <section class="mb-5">
+  <section class="search-results-section">
+    <div class="section-heading">
       <h2>Inventories</h2>
+      <span class="status-badge">
+        <%= pluralize(@inventories.size, "result") %>
+      </span>
+    </div>
 
-      <% if @inventories.any? %>
-        <table class="table table-striped">
+    <% if @inventories.any? %>
+      <div class="table-responsive">
+        <table>
           <thead>
             <tr>
               <th>Name</th>
@@ -29,6 +44,7 @@
               <th>Creator</th>
             </tr>
           </thead>
+
           <tbody>
             <% @inventories.each do |inventory| %>
               <tr>
@@ -36,23 +52,32 @@
                   <%= link_to inventory.name,
                       inventory_items_path(inventory) %>
                 </td>
-                <td><%= inventory.custom_id %></td>
-                <td><%= inventory.description %></td>
+                <td><%= inventory.custom_id.presence || "—" %></td>
+                <td><%= inventory.description.presence || "—" %></td>
                 <td><%= inventory.user.name %></td>
               </tr>
             <% end %>
           </tbody>
         </table>
-      <% else %>
+      </div>
+    <% else %>
+      <div class="compact-empty-state empty-state">
         <p>No inventories found.</p>
-      <% end %>
-    </section>
+      </div>
+    <% end %>
+  </section>
 
-    <section>
+  <section class="search-results-section">
+    <div class="section-heading">
       <h2>Items</h2>
+      <span class="status-badge">
+        <%= pluralize(@items.size, "result") %>
+      </span>
+    </div>
 
-      <% if @items.any? %>
-        <table class="table table-striped">
+    <% if @items.any? %>
+      <div class="table-responsive">
+        <table>
           <thead>
             <tr>
               <th>Name</th>
@@ -60,6 +85,7 @@
               <th>Inventory</th>
             </tr>
           </thead>
+
           <tbody>
             <% @items.each do |item| %>
               <tr>
@@ -67,7 +93,7 @@
                   <%= link_to item.name,
                       inventory_item_path(item.inventory, item) %>
                 </td>
-                <td><%= item.description %></td>
+                <td><%= item.description.presence || "—" %></td>
                 <td>
                   <%= link_to item.inventory.name,
                       inventory_items_path(item.inventory) %>
@@ -76,9 +102,12 @@
             <% end %>
           </tbody>
         </table>
-      <% else %>
+      </div>
+    <% else %>
+      <div class="compact-empty-state empty-state">
         <p>No items found.</p>
-      <% end %>
-    </section>
-  <% end %>
-</div>
+      </div>
+    <% end %>
+  </section>
+
+<% end %>

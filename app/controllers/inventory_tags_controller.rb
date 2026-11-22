@@ -21,10 +21,15 @@ class InventoryTagsController < ApplicationController
 end
   def destroy
     inventory_tag = @inventory.inventory_tags.find(params[:id])
-    inventory_tag.destroy
 
-    redirect_to edit_inventory_path(@inventory),
-                notice: "Tag removed successfully."
+    if inventory_tag.destroy
+      redirect_to edit_inventory_path(@inventory),
+                  notice: "Tag removed successfully."
+    else
+      redirect_to edit_inventory_path(@inventory),
+                  alert: inventory_tag.errors.full_messages.to_sentence.presence ||
+                         "Tag could not be removed."
+    end
   end
 
   private

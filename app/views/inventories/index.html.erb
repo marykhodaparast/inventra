@@ -1,9 +1,16 @@
 
-<h1>Inventories</h1>
+<div class="page-heading">
+  <div>
+    <h1>Inventories</h1>
+    <p>Browse and manage your inventories.</p>
+  </div>
 
-<% if logged_in? %>
-  <%= link_to "Create New Inventory", new_inventory_path %>
-<% end %>
+  <% if logged_in? %>
+    <%= link_to "＋ Create New Inventory",
+        new_inventory_path,
+        class: "button button-primary" %>
+  <% end %>
+</div>
 
 <% if @inventories.any? %>
   <div class="table-responsive">
@@ -25,27 +32,38 @@
       <tbody>
         <% @inventories.each do |inventory| %>
           <tr>
-            <td><%= inventory.name %></td>
+            <td><strong><%= inventory.name %></strong></td>
             <td><%= inventory.custom_id %></td>
-            <td><%= inventory.description %></td>
+            <td><%= inventory.description.presence || "—" %></td>
             <td><%= inventory.user.name %></td>
-            <td><%= inventory.visibility %></td>
+            <td>
+              <span class="status-badge">
+                <%= inventory.visibility.to_s.humanize %>
+              </span>
+            </td>
             <td>
               <%= link_to "View Items",
-                  inventory_items_path(inventory) %>
+                  inventory_items_path(inventory),
+                  class: "table-action" %>
             </td>
 
             <% if logged_in? %>
               <td>
                 <% if current_user.admin? ||
                       inventory.user_id == current_user.id %>
-                  <%= link_to "Edit",
-                      edit_inventory_path(inventory) %>
+                  <div class="table-actions">
+                    <%= link_to "Edit",
+                        edit_inventory_path(inventory),
+                        class: "button button-secondary button-small" %>
 
-                  <%= button_to "Delete",
-                      inventory_path(inventory),
-                      method: :delete,
-                      data: { turbo_confirm: "Are you sure?" } %>
+                    <%= button_to "Delete",
+                        inventory_path(inventory),
+                        method: :delete,
+                        class: "button button-danger button-small",
+                        data: { turbo_confirm: "Are you sure you want to delete this inventory?" } %>
+                  </div>
+                <% else %>
+                  <span class="muted-text">No access</span>
                 <% end %>
               </td>
             <% end %>
@@ -55,5 +73,14 @@
     </table>
   </div>
 <% else %>
-  <p>No inventories available yet.</p>
+  <section class="empty-state">
+    <h2>No inventories yet</h2>
+    <p>There are no inventories available at the moment.</p>
+
+    <% if logged_in? %>
+      <%= link_to "Create Your First Inventory",
+          new_inventory_path,
+          class: "button button-primary" %>
+    <% end %>
+  </section>
 <% end %>

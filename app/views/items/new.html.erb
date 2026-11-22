@@ -1,11 +1,24 @@
-<h1>New Item - <%= @inventory.name %></h1>
 
-<%= form_with model: [@inventory, @item] do |form| %>
-  <%= render "form", form: form %>
-
+<div class="page-heading">
   <div>
-    <%= form.submit "Create Item" %>
+    <h1>Create New Item</h1>
+    <p>Add an item to <strong><%= @inventory.name %></strong>.</p>
   </div>
-<% end %>
+</div>
 
-<%= link_to "Back to Items", inventory_items_path(@inventory) %>
+<section class="form-card">
+  <%= form_with model: [@inventory, @item],
+                html: { class: "app-form" } do |form| %>
+
+    <%= render "form", form: form %>
+
+    <div class="form-actions">
+      <%= form.submit "Create Item",
+          class: "button button-primary" %>
+
+      <%= link_to "Cancel",
+          inventory_items_path(@inventory),
+          class: "button button-secondary" %>
+    </div>
+  <% end %>
+</section>

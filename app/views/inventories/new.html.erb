@@ -1,24 +1,44 @@
-<h1>New Inventory</h1>
 
-<%= form_with model: @inventory do |form| %>
+<div class="page-heading">
   <div>
-    <%= form.label :name, "Inventory Name" %>
-    <%= form.text_field :name, required: true %>
+    <h1>Create New Inventory</h1>
+    <p>Set up a new inventory and manage your items.</p>
   </div>
+</div>
 
-  <div>
-    <%= form.label :description, "Description" %>
-    <%= form.text_area :description %>
-  </div>
+<section class="form-card">
+  <%= form_with model: @inventory, html: { class: "app-form" } do |form| %>
 
-  <div>
-    <%= form.label :visibility, "Visibility" %>
-    <%= form.select :visibility, [["Private", "private"], ["Public", "public"]] %>
-  </div>
+    <div class="form-field">
+      <%= form.label :name, "Inventory Name" %>
+      <%= form.text_field :name,
+          required: true,
+          placeholder: "Enter inventory name" %>
+    </div>
 
-  <div>
-    <%= form.submit "Create Inventory" %>
-  </div>
-<% end %>
+    <div class="form-field">
+      <%= form.label :description, "Description" %>
+      <%= form.text_area :description,
+          placeholder: "Describe what this inventory contains..." %>
+    </div>
 
-<%= link_to "Back to Inventories", inventories_path %>
+    <div class="form-field">
+      <%= form.label :visibility, "Visibility" %>
+      <%= form.select :visibility,
+          [["Private", "private"], ["Public", "public"]] %>
+      <p class="field-hint">
+        Private inventories are restricted. Public inventories can be viewed by others.
+      </p>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Create Inventory",
+          class: "button button-primary" %>
+
+      <%= link_to "Cancel",
+          inventories_path,
+          class: "button button-secondary" %>
+    </div>
+
+  <% end %>
+</section>

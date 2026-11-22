@@ -37,10 +37,14 @@ class InventoryAccessesController < ApplicationController
   end
 
   def destroy
-    @inventory_access.destroy
-
-    redirect_to edit_inventory_path(@inventory),
-                notice: "Write access revoked successfully."
+    if @inventory_access.destroy
+      redirect_to edit_inventory_path(@inventory),
+                  notice: "Write access revoked successfully."
+    else
+      redirect_to edit_inventory_path(@inventory),
+                  alert: @inventory_access.errors.full_messages.to_sentence.presence ||
+                         "Write access could not be revoked."
+    end
   end
 
   private

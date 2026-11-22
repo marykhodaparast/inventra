@@ -1,60 +1,87 @@
-<div>
+
+<div class="form-field">
   <%= form.label :name, "Item Name" %>
-  <%= form.text_field :name, required: true %>
+  <%= form.text_field :name,
+      required: true,
+      placeholder: "Enter item name" %>
 </div>
 
-<div>
+<div class="form-field">
   <%= form.label :description, "Description" %>
-  <%= form.text_area :description %>
+  <%= form.text_area :description,
+      placeholder: "Describe this item..." %>
 </div>
 
-<div>
+<div class="form-field">
   <%= form.label :category_id, "Category" %>
   <%= form.collection_select :category_id,
-                             @inventory.categories,
-                             :id,
-                             :name,
-                             { include_blank: "No Category" } %>
+      @inventory.categories,
+      :id,
+      :name,
+      { include_blank: "No Category" } %>
+  <p class="field-hint">
+    Choose a category to organize this item.
+  </p>
 </div>
-<hr>
 
-<h3>Custom Fields</h3>
+<% custom_fields = @inventory.custom_fields.order(:position) %>
 
-<% @inventory.custom_fields.order(:position).each do |custom_field| %>
-  <% field_value = @item.custom_field_values[custom_field.id.to_s] %>
+<% if custom_fields.any? %>
+  <div class="custom-fields-section">
+    <div class="subsection-heading">
+      <h3>Custom Fields</h3>
+      <p>Provide additional information for this item.</p>
+    </div>
 
-  <div>
-    <%= label_tag "item_custom_field_values_#{custom_field.id}",
-                  custom_field.name %>
+    <div class="app-form">
+      <% custom_fields.each do |custom_field| %>
+        <% field_value = @item.custom_field_values[custom_field.id.to_s] %>
 
-    <% case custom_field.field_type %>
-    <% when "text" %>
-      <%= text_field_tag "item[custom_field_values][#{custom_field.id}]",
-                         field_value,
-                         id: "item_custom_field_values_#{custom_field.id}" %>
+        <div class="form-field">
+          <%= label_tag "item_custom_field_values_#{custom_field.id}",
+              custom_field.name %>
 
-    <% when "textarea" %>
-      <%= text_area_tag "item[custom_field_values][#{custom_field.id}]",
-                        field_value,
-                        id: "item_custom_field_values_#{custom_field.id}" %>
+          <% case custom_field.field_type %>
+          <% when "text" %>
+            <%= text_field_tag "item[custom_field_values][#{custom_field.id}]",
+                field_value,
+                id: "item_custom_field_values_#{custom_field.id}",
+                placeholder: "Enter #{custom_field.name.downcase}" %>
 
-    <% when "number" %>
-      <%= number_field_tag "item[custom_field_values][#{custom_field.id}]",
-                           field_value,
-                           id: "item_custom_field_values_#{custom_field.id}" %>
+          <% when "textarea" %>
+            <%= text_area_tag "item[custom_field_values][#{custom_field.id}]",
+                field_value,
+                id: "item_custom_field_values_#{custom_field.id}",
+                placeholder: "Enter #{custom_field.name.downcase}" %>
 
-    <% when "link" %>
-      <%= url_field_tag "item[custom_field_values][#{custom_field.id}]",
-                        field_value,
-                        id: "item_custom_field_values_#{custom_field.id}" %>
+          <% when "number" %>
+            <%= number_field_tag "item[custom_field_values][#{custom_field.id}]",
+                field_value,
+                id: "item_custom_field_values_#{custom_field.id}",
+                placeholder: "Enter a number" %>
 
-    <% when "boolean" %>
-      <%= hidden_field_tag "item[custom_field_values][#{custom_field.id}]", "0" %>
+          <% when "link" %>
+            <%= url_field_tag "item[custom_field_values][#{custom_field.id}]",
+                field_value,
+                id: "item_custom_field_values_#{custom_field.id}",
+                placeholder: "https://example.com" %>
 
-      <%= check_box_tag "item[custom_field_values][#{custom_field.id}]",
-                        "1",
-                        field_value == "1" || field_value == true,
-                        id: "item_custom_field_values_#{custom_field.id}" %>
-    <% end %>
+          <% when "boolean" %>
+            <div class="boolean-field">
+              <%= hidden_field_tag "item[custom_field_values][#{custom_field.id}]", "0" %>
+
+              <%= check_box_tag "item[custom_field_values][#{custom_field.id}]",
+                  "1",
+                  field_value == "1" || field_value == true,
+                  id: "item_custom_field_values_#{custom_field.id}" %>
+
+              <%= label_tag "item_custom_field_values_#{custom_field.id}",
+                  "Yes / Enabled",
+                  class: "boolean-label" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   </div>
 <% end %>

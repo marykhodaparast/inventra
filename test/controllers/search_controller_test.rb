@@ -35,7 +35,7 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     get search_url, params: { q: "" }
 
     assert_response :success
-    assert_select "p", text: "Please enter a search term or select a tag."
+    assert_select "p", text: "Search inventories and items or explore content by tag."
   end
   test "guest can search inventories by tag" do
   user = User.create!(

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html data-theme="<%= logged_in? ? current_user.theme : 'light' %>">
   <head>
@@ -6,69 +7,69 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Inventra">
     <meta name="mobile-web-app-capable" content="yes">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-<body>
-  <nav class="main-navbar">
-    <%= link_to "Inventra", root_path, class: "navbar-brand" %>
 
-    <details class="nav-menu" open>
-      <summary>Menu</summary>
+  <body>
+    <nav class="main-navbar">
+      <%= link_to "Inventra", root_path, class: "navbar-brand" %>
 
-      <div class="nav-links">
-        <%= link_to "Home", root_path %>
-        <%= link_to "Inventories", inventories_path %>
+      <details class="nav-menu">
+        <summary>Menu</summary>
 
-        <% if logged_in? %>
-          <%= link_to "My Profile", profile_path %>
+        <div class="nav-links">
+          <%= link_to "Home", root_path %>
+          <%= link_to "Inventories", inventories_path %>
 
-          <% if current_user.admin? %>
-            <%= link_to "Admin", admin_users_path %>
+          <% if logged_in? %>
+            <%= link_to "My Profile", profile_path %>
+
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_users_path %>
+            <% end %>
+
+            <%= button_to "Log Out",
+                logout_path,
+                method: :delete,
+                class: "nav-logout" %>
+          <% else %>
+            <%= link_to "Log In", login_path %>
+            <%= link_to "Sign Up", new_user_path %>
           <% end %>
+        </div>
+      </details>
+    </nav>
 
-          <%= button_to "Log Out",
-              logout_path,
-              method: :delete,
-              class: "nav-logout" %>
-        <% else %>
-          <%= link_to "Log In", login_path %>
-          <%= link_to "Sign Up", new_user_path %>
-        <% end %>
-      </div>
-    </details>
-  </nav>
+    <header class="app-header">
+      <%= form_with url: search_path, method: :get, local: true do |form| %>
+        <%= form.search_field :q,
+            value: params[:q],
+            placeholder: "Search inventories and items...",
+            aria: { label: "Search inventories and items" } %>
 
-  <header class="app-header">
-    <%= form_with url: search_path, method: :get, local: true do |form| %>
-      <%= form.search_field :q,
-          value: params[:q],
-          placeholder: "Search inventories and items...",
-          aria: { label: "Search inventories and items" } %>
+        <%= form.submit "Search" %>
+      <% end %>
+    </header>
 
-      <%= form.submit "Search" %>
-    <% end %>
-  </header>
+    <div class="page-container">
+      <% flash.each do |type, message| %>
+        <div class="flash <%= type %>"
+             role="<%= %w[alert error].include?(type.to_s) ? 'alert' : 'status' %>">
+          <%= message %>
+        </div>
+      <% end %>
 
-  <% flash.each do |type, message| %>
-    <div class="flash <%= type %>">
-      <%= message %>
+      <%= yield %>
     </div>
-  <% end %>
-
-  <%= yield %>
-</body>
+  </body>
 </html>

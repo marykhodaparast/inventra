@@ -26,10 +26,14 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-    @category.destroy
-
-    redirect_to edit_inventory_path(@inventory),
-                notice: "Category deleted successfully."
+    if @category.destroy
+      redirect_to edit_inventory_path(@inventory),
+                  notice: "Category deleted successfully."
+    else
+      redirect_to edit_inventory_path(@inventory),
+                  alert: @category.errors.full_messages.to_sentence.presence ||
+                         "Category could not be deleted."
+    end
   end
 
   private

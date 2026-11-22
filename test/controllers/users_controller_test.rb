@@ -49,7 +49,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   assert_response :success
   assert_select "h1", "User Profile"
-  assert_select "p", /Profile Tester/
+  assert_select ".profile-identity h2", "Profile Tester"
   assert_select "p", /Ruby on Rails developer/
   assert_no_match user.email, response.body
 end

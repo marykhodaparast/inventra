@@ -1,19 +1,36 @@
-<h1>User Profile</h1>
+<div class="page-heading">
+  <div>
+    <h1>User Profile</h1>
+    <p>View profile information</p>
+  </div>
+</div>
 
-<% if @user.avatar_url.present? %>
-  <%= image_tag @user.avatar_url,
-                alt: "Profile avatar",
-                width: 120 %>
-<% end %>
+<section class="profile-card public-profile-card">
+  <div class="profile-header">
+    <% if @user.avatar_url.present? %>
+      <%= image_tag @user.avatar_url,
+                    alt: "#{@user.name}'s profile avatar",
+                    class: "profile-avatar" %>
+    <% else %>
+      <div class="profile-avatar-placeholder">
+        <%= @user.name.to_s.first&.upcase || "U" %>
+      </div>
+    <% end %>
 
-<p>
-  <strong>Name:</strong>
-  <%= @user.name %>
-</p>
+    <div class="profile-identity">
+      <h2><%= @user.name %></h2>
+      <p>Inventra Member</p>
+    </div>
+  </div>
 
-<p>
-  <strong>Bio:</strong>
-  <%= @user.bio.presence || "No bio added yet." %>
-</p>
+  <div class="profile-details">
+    <div class="profile-detail profile-bio">
+      <span class="profile-detail-label">About Me</span>
+      <p><%= @user.bio.presence || "No bio added yet." %></p>
+    </div>
+  </div>
+</section>
 
-<%= link_to "Back to Home", root_path %>
+<div class="page-footer">
+  <%= link_to "Back to Home", root_path, class: "button button-secondary" %>
+</div>

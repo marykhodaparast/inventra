@@ -34,6 +34,7 @@ The application is deployed and publicly accessible.
 - User registration and authentication
 - User profiles
 - User roles and administrator management
+- Public user profiles
 
 ### Inventory Management
 - Create, edit, and delete inventories
@@ -55,6 +56,7 @@ The application is deployed and publicly accessible.
 ### Items
 - Create, view, edit, and delete inventory items
 - Sortable and searchable item listings
+- Inventory statistics
 
 ### Collaboration
 - Inventory discussion boards
@@ -66,18 +68,20 @@ The application is deployed and publicly accessible.
 - Full-text search
 - Latest inventories
 - Popular inventories
-- Tag cloud
+- Tag-based inventory discovery
 - Inventory statistics
 
 ### User Interface
 - Responsive design
 - Light and dark themes
+- Consistent application-wide design system
+- Redesigned forms, tables, profile pages, and navigation
+- Improved flash messages, validation feedback, and empty states
 
 ## Planned Features
 
 - Google and other external account authentication
 - Additional UI language support
-- Further UI and UX improvements
 
 ## Local Development Setup
 
@@ -111,15 +115,18 @@ Local database credentials are provided through environment variables.
 To enter your PostgreSQL password without displaying it while typing:
 
 ```bash
-printf "PostgreSQL password: " ; read -s INVENTRA_DATABASE_PASSWORD ; echo ; export INVENTRA_DATABASE_PASSWORD
+printf "PostgreSQL password: "
+read -s INVENTRA_DATABASE_PASSWORD
+echo
+export INVENTRA_DATABASE_PASSWORD
 ```
 
 Enter your PostgreSQL password when prompted.
 
 **Important:**
-- Run this command in the same terminal session where you execute Rails database commands.
+- Run these commands in the same terminal session where you execute Rails database commands.
 - The password is stored only in the current shell session.
-- Run the command again when opening a new terminal session.
+- Run the commands again when opening a new terminal session.
 - Ensure `config/database.yml` reads the password from `INVENTRA_DATABASE_PASSWORD`.
 - Never commit database passwords or other sensitive credentials to GitHub.
 
@@ -152,7 +159,7 @@ Inventra is deployed using **EthioDeploy**, with PostgreSQL hosted on **Neon**.
 ### Production Start Command
 
 ```bash
-bundle exec rails db:prepare && bundle exec bin/rails server -b 0.0.0.0 -p ${PORT:-3000}
+bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0 -p "${PORT:-3000}"
 ```
 
 ### Production Environment Variables
@@ -179,6 +186,23 @@ bundle exec rails db:prepare
 
 This command prepares the database and applies pending migrations.
 
+## Testing
+
+The application test suite uses Rails' built-in testing framework.
+
+Run the complete test suite with:
+
+```bash
+bin/rails test
+```
+
+**Latest test results:**
+- 188 runs
+- 757 assertions
+- 0 failures
+- 0 errors
+- 0 skips
+
 ## Development Progress
 
 ### Completed
@@ -198,17 +222,20 @@ This command prepares the database and applies pending migrations.
 - [x] Implement custom inventory IDs
 - [x] Implement inventory access permissions
 - [x] Implement full-text search
-- [x] Implement inventory tags and tag cloud
+- [x] Implement inventory tags and tag-based discovery
 - [x] Implement discussion features
 - [x] Implement dashboard and statistics
 - [x] Add responsive UI and themes
+- [x] Improve application-wide UI and UX
 - [x] Verify production database migrations
 - [x] Verify production registration and login
+- [x] Run the complete test suite successfully
+- [x] Prepare project documentation
 
 ### Upcoming
 
-- [ ] Final UI and UX improvements
-- [ ] Final testing and presentation preparation
+- [ ] Final project review
+- [ ] Presentation preparation
 
 ## Author
 

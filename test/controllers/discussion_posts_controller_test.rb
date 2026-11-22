@@ -68,7 +68,7 @@ test "index displays newly created discussion posts on subsequent requests" do
   get inventory_discussion_posts_url(@inventory)
 
   assert_response :success
-  assert_includes response.body, "No discussion messages yet."
+  assert_includes response.body, "No messages yet"
 
   DiscussionPost.create!(
     inventory: @inventory,

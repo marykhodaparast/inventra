@@ -1,104 +1,149 @@
-<main>
-  <h1>Welcome to Inventra</h1>
+<main class="home-page">
+  <section class="home-hero">
+    <div class="home-hero-content">
+      <span class="home-eyebrow">INVENTRA PLATFORM</span>
 
-  <p>
-    A smart and collaborative inventory management platform.
-  </p>
+      <h1>Welcome to Inventra</h1>
 
-  <p>
-    Organize your inventories, manage items, and collaborate with others.
-  </p>
+      <p class="home-hero-description">
+        A smart and collaborative inventory management platform.
+      </p>
 
-  <% if logged_in? %>
-    <p>Welcome, <%= current_user.name %>!</p>
+      <p class="home-hero-subtitle">
+        Organize your inventories, manage items, and collaborate with others
+        in one place.
+      </p>
 
-    <%= button_to "Log Out", logout_path, method: :delete %>
-  <% else %>
-    <%= link_to "Log In", login_path %>
-    <%= link_to "Sign Up", new_user_path %>
-  <% end %>
-  <hr>
+      <% if logged_in? %>
+        <div class="home-welcome">
+          Welcome back, <strong><%= current_user.name %></strong>!
+        </div>
 
-<section class="mt-4">
-  <h2>Latest Inventories</h2>
+        <%= link_to "Explore Inventories",
+                    inventories_path,
+                    class: "button button-primary" %>
+      <% else %>
+        <div class="home-hero-actions">
+          <%= link_to "Get Started",
+                      new_user_path,
+                      class: "button button-primary" %>
 
-  <% if @latest_inventories.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Creator</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @latest_inventories.each do |inventory| %>
-          <tr>
-            <td>
-              <%= link_to inventory.name,
-                  inventory_items_path(inventory) %>
-            </td>
-            <td><%= inventory.description %></td>
-            <td><%= inventory.user.name %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>No inventories available yet.</p>
-  <% end %>
-</section>
-
-<hr>
-
-<section class="mt-4">
-  <h2>Popular Inventories</h2>
-
-  <% if @popular_inventories.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Creator</th>
-          <th>Number of Items</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @popular_inventories.each do |inventory| %>
-          <tr>
-            <td>
-              <%= link_to inventory.name,
-                  inventory_items_path(inventory) %>
-            </td>
-            <td><%= inventory.user.name %></td>
-            <td><%= inventory.items_count %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>No inventories available yet.</p>
-  <% end %>
-</section>
-<hr>
-
-<section class="mt-4">
-  <h2>Tag Cloud</h2>
-
-  <% if @tags.any? %>
-    <div class="d-flex flex-wrap gap-2">
-      <% @tags.each do |tag| %>
-        <%= link_to search_path(tag: tag.name),
-            class: "badge bg-primary text-white text-decoration-none" do %>
-          <%= tag.name %>
-          (<%= tag.inventories_count %>)
-        <% end %>
+          <%= link_to "Log In",
+                      login_path,
+                      class: "button button-secondary" %>
+        </div>
       <% end %>
     </div>
-  <% else %>
-    <p>No tags available yet.</p>
-  <% end %>
-</section>
+  </section>
+
+  <section class="home-content-section">
+    <div class="section-heading">
+      <div>
+        <h2>Latest Inventories</h2>
+        <p class="muted-text">Recently created inventories.</p>
+      </div>
+    </div>
+
+    <% if @latest_inventories.any? %>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Creator</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @latest_inventories.each do |inventory| %>
+              <tr>
+                <td>
+                  <%= link_to inventory.name,
+                      inventory_items_path(inventory) %>
+                </td>
+                <td><%= inventory.description.presence || "—" %></td>
+                <td><%= inventory.user.name %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-state compact-empty-state">
+        <p>No inventories available yet.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="home-content-section">
+    <div class="section-heading">
+      <div>
+        <h2>Popular Inventories</h2>
+        <p class="muted-text">Inventories with the most items.</p>
+      </div>
+    </div>
+
+    <% if @popular_inventories.any? %>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Creator</th>
+              <th>Number of Items</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @popular_inventories.each do |inventory| %>
+              <tr>
+                <td>
+                  <%= link_to inventory.name,
+                      inventory_items_path(inventory) %>
+                </td>
+                <td><%= inventory.user.name %></td>
+                <td>
+                  <span class="status-badge">
+                    <%= inventory.items_count %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-state compact-empty-state">
+        <p>No inventories available yet.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="home-content-section home-tags-section">
+    <div class="section-heading">
+      <div>
+        <h2>Explore by Tags</h2>
+        <p class="muted-text">Discover inventories by category.</p>
+      </div>
+    </div>
+
+    <% if @tags.any? %>
+      <div class="home-tag-list">
+        <% @tags.each do |tag| %>
+          <%= link_to search_path(tag: tag.name),
+                      class: "home-tag" do %>
+            <span><%= tag.name %></span>
+            <span class="home-tag-count">
+              <%= tag.inventories_count %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state compact-empty-state">
+        <p>No tags available yet.</p>
+      </div>
+    <% end %>
+  </section>
 </main>

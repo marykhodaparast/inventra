@@ -1,28 +1,50 @@
-<section id="discussion">
-  <h2>Discussion</h2>
+<section id="discussion" class="discussion-section">
+  <div class="discussion-heading">
+    <div>
+      <h2>Discussion</h2>
+      <p>Share ideas and communicate with other inventory members.</p>
+    </div>
+  </div>
 
-  <%= turbo_frame_tag "discussion_posts",
-                    src: inventory_discussion_posts_path(@inventory),
-                    loading: :eager,
-                    data: { controller: "discussion-refresh" } do %>
-  <p>Loading discussion...</p>
-<% end %>
+  <div class="discussion-posts-container">
+    <%= turbo_frame_tag "discussion_posts",
+                        src: inventory_discussion_posts_path(@inventory),
+                        loading: :eager,
+                        data: { controller: "discussion-refresh" } do %>
+      <div class="discussion-loading">
+        <span class="loading-indicator"></span>
+        <p>Loading discussion...</p>
+      </div>
+    <% end %>
+  </div>
 
   <% if current_user.present? %>
-    <h3>Write a message</h3>
+    <div class="discussion-compose">
+      <h3>Write a message</h3>
+      <p class="muted-text">Share your thoughts with the community.</p>
 
-    <%= form_with model: [@inventory, @inventory.discussion_posts.new] do |form| %>
-      <div>
-        <%= form.label :content, "Message" %>
-        <%= form.text_area :content, rows: 5, required: true %>
-      </div>
+      <%= form_with model: [@inventory, @inventory.discussion_posts.new],
+                    class: "app-form" do |form| %>
+        <div class="form-field">
+          <%= form.label :content, "Your message" %>
+          <%= form.text_area :content,
+                             rows: 5,
+                             required: true,
+                             placeholder: "Write your message here..." %>
+        </div>
 
-      <%= form.submit "Post Message" %>
-    <% end %>
+        <div class="form-actions">
+          <%= form.submit "Post Message",
+                          class: "button button-primary" %>
+        </div>
+      <% end %>
+    </div>
   <% else %>
-    <p>
-      <%= link_to "Log in", login_path %>
-      to join the discussion.
-    </p>
+    <div class="discussion-login-prompt">
+      <p>
+        <%= link_to "Log in", login_path %>
+        to join the discussion and share your thoughts.
+      </p>
+    </div>
   <% end %>
 </section>

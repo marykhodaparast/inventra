@@ -1,32 +1,77 @@
-<h1>Edit My Profile</h1>
 
-<%= form_with model: @user, url: profile_path, method: :patch, data: { turbo: false } do |form| %>
+<div class="page-heading">
   <div>
-    <%= form.label :name %>
-    <%= form.text_field :name %>
+    <h1>Edit My Profile</h1>
+    <p>Update your personal information and application preferences.</p>
   </div>
-
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email %>
-  </div>
-
-  <div>
-    <%= form.label :bio %>
-    <%= form.text_area :bio %>
-  </div>
-
-  <div>
-    <%= form.label :avatar_url %>
-    <%= form.url_field :avatar_url %>
-  </div>
-  <div>
-  <%= form.label :theme, "Appearance" %>
-  <%= form.select :theme,
-      [["Light", "light"], ["Dark", "dark"]] %>
 </div>
 
-  <%= form.submit "Save Changes" %>
-<% end %>
+<section class="form-card profile-edit-card">
+  <%= form_with model: @user,
+      url: profile_path,
+      method: :patch,
+      data: { turbo: false },
+      html: { class: "app-form" } do |form| %>
 
-<%= link_to "Back to Profile", profile_path %>
+    <div class="profile-form-section">
+      <h2>Personal Information</h2>
+
+      <div class="form-field">
+        <%= form.label :name, "Full Name" %>
+        <%= form.text_field :name,
+            placeholder: "Enter your full name" %>
+      </div>
+
+      <div class="form-field">
+        <%= form.label :email, "Email Address" %>
+        <%= form.email_field :email,
+            placeholder: "Enter your email address" %>
+      </div>
+    </div>
+
+    <div class="profile-form-section">
+      <h2>Profile Details</h2>
+
+      <div class="form-field">
+        <%= form.label :bio, "About Me" %>
+        <%= form.text_area :bio,
+            placeholder: "Tell us a little about yourself..." %>
+      </div>
+
+      <div class="form-field">
+        <%= form.label :avatar_url, "Profile Image URL" %>
+        <%= form.url_field :avatar_url,
+            placeholder: "https://example.com/avatar.jpg" %>
+        <p class="field-hint">
+          Provide a publicly accessible image URL.
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-form-section">
+      <h2>Appearance</h2>
+
+      <div class="form-field">
+        <%= form.label :theme, "Application Theme" %>
+        <%= form.select :theme, [
+          ["Light Mode", "light"],
+          ["Dark Mode", "dark"]
+        ] %>
+
+        <p class="field-hint">
+          Choose how Inventra looks when you use the application.
+        </p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Save Changes",
+          class: "button button-primary" %>
+
+      <%= link_to "Cancel",
+          profile_path,
+          class: "button button-secondary" %>
+    </div>
+
+  <% end %>
+</section>

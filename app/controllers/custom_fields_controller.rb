@@ -27,10 +27,14 @@ class CustomFieldsController < ApplicationController
   end
 
   def destroy
-    @custom_field.destroy
-
-    redirect_to edit_inventory_path(@inventory),
-                notice: "Custom field deleted successfully."
+    if @custom_field.destroy
+      redirect_to edit_inventory_path(@inventory),
+                  notice: "Custom field deleted successfully."
+    else
+      redirect_to edit_inventory_path(@inventory),
+                  alert: @custom_field.errors.full_messages.to_sentence.presence ||
+                         "Custom field could not be deleted."
+    end
   end
 
   private

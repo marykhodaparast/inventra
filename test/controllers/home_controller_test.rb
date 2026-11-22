@@ -28,8 +28,9 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   get root_url
 
   assert_response :success
-  assert_select "h2", "Tag Cloud"
-  assert_select "a", text: /technology \(2\)/
+  assert_select ".home-tags-section h2", "Explore by Tags"
+  assert_select ".home-tags-section .home-tag span:first-child", text: "technology"
+  assert_select ".home-tags-section .home-tag-count", text: "2"
 end
 
 test "homepage displays popular inventories ordered by item count" do
@@ -93,7 +94,7 @@ test "homepage does not display tags without inventories" do
   get root_url
 
   assert_response :success
-  assert_select "h2", "Tag Cloud"
+  assert_select ".home-tags-section h2", "Explore by Tags"
   assert_select "a", text: /unused-tag/, count: 0
 end
 end

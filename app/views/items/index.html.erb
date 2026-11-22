@@ -1,72 +1,127 @@
-<h1><%= @inventory.name %> - Items</h1>
 
-<section id="inventory-statistics">
+<div class="page-heading">
+  <div>
+    <h1><%= @inventory.name %> — Items</h1>
+    <p>View, organize, and manage items in this inventory.</p>
+  </div>
+
+  <% if @inventory.writable_by?(current_user) %>
+    <%= link_to "＋ Add New Item",
+        new_inventory_item_path(@inventory),
+        class: "button button-primary" %>
+  <% end %>
+</div>
+
+<section id="inventory-statistics" class="statistics-section">
   <h2>Inventory Statistics</h2>
 
-  <ul>
-    <li>Total Items: <%= @statistics[:total_items] %></li>
-    <li>Total Categories: <%= @statistics[:total_categories] %></li>
-    <li>Total Custom Fields: <%= @statistics[:total_custom_fields] %></li>
-    <li>Total Discussion Posts: <%= @statistics[:total_discussion_posts] %></li>
-  </ul>
+  <div class="statistics-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total Items</span>
+      <strong class="stat-value"><%= @statistics[:total_items] %></strong>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Categories</span>
+      <strong class="stat-value"><%= @statistics[:total_categories] %></strong>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Custom Fields</span>
+      <strong class="stat-value"><%= @statistics[:total_custom_fields] %></strong>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Discussion Posts</span>
+      <strong class="stat-value"><%= @statistics[:total_discussion_posts] %></strong>
+    </div>
+  </div>
 </section>
 
-<%= link_to "Add New Item", new_inventory_item_path(@inventory) %>
+<section class="items-section">
+  <div class="section-heading">
+    <h2>All Items</h2>
+    <span class="muted-text">
+      <%= pluralize(@items.size, "item") %>
+    </span>
+  </div>
 
-
-<% if @items.any? %>
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Category</th>
-          <% if @inventory.writable_by?(current_user) %>
-            <th>Management</th>
-          <% end %>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @items.each do |item| %>
+  <% if @items.any? %>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
           <tr>
-            <td>
-              <%= link_to item.name,
-                  inventory_item_path(@inventory, item) %>
-            </td>
-
-            <td><%= item.description %></td>
-
-            <td>
-              <%= item.category&.name || "Uncategorized" %>
-            </td>
-
+            <th>Name</th>
+            <th>Description</th>
+            <th>Category</th>
             <% if @inventory.writable_by?(current_user) %>
-              <td>
-                <%= link_to "Edit",
-                    edit_inventory_item_path(@inventory, item) %>
-
-                <%= button_to "Delete",
-                    inventory_item_path(@inventory, item),
-                    method: :delete,
-                    form: {
-                      data: {
-                        turbo_confirm: "Are you sure you want to delete this item?"
-                      }
-                    } %>
-              </td>
+              <th>Management</th>
             <% end %>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <p>No items found in this inventory.</p>
-<% end %>
+        </thead>
 
+        <tbody>
+          <% @items.each do |item| %>
+            <tr>
+              <td>
+                <strong>
+                  <%= link_to item.name,
+                      inventory_item_path(@inventory, item) %>
+                </strong>
+              </td>
+
+              <td>
+                <%= item.description.presence || "—" %>
+              </td>
+
+              <td>
+                <span class="status-badge">
+                  <%= item.category&.name || "Uncategorized" %>
+                </span>
+              </td>
+
+              <% if @inventory.writable_by?(current_user) %>
+                <td>
+                  <div class="table-actions">
+                    <%= link_to "Edit",
+                        edit_inventory_item_path(@inventory, item),
+                        class: "button button-secondary button-small" %>
+
+                    <%= button_to "Delete",
+                        inventory_item_path(@inventory, item),
+                        method: :delete,
+                        class: "button button-danger button-small",
+                        form: {
+                          data: {
+                            turbo_confirm: "Are you sure you want to delete this item?"
+                          }
+                        } %>
+                  </div>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <h2>No items yet</h2>
+      <p>This inventory doesn't contain any items yet.</p>
+
+      <% if @inventory.writable_by?(current_user) %>
+        <%= link_to "Add Your First Item",
+            new_inventory_item_path(@inventory),
+            class: "button button-primary" %>
+      <% end %>
+    </div>
+  <% end %>
+</section>
 
 <%= render "discussion_posts/discussion" %>
 
-<%= link_to "Back to Inventories", inventories_path %>
+<div class="page-footer">
+  <%= link_to "← Back to Inventories",
+      inventories_path,
+      class: "button button-secondary" %>
+</div>

@@ -1,26 +1,36 @@
 <%= turbo_frame_tag "discussion_posts" do %>
   <% if discussion_posts.any? %>
-    <% discussion_posts.each do |post| %>
-      <article>
-        <p>
-          <strong>
-            <%= link_to post.user.name, user_path(post.user) %>
-          </strong>
+    <div class="discussion-post-list">
+      <% discussion_posts.each do |post| %>
+        <article class="discussion-post-card">
+          <div class="discussion-post-header">
+            <div class="discussion-author">
+              <div class="discussion-avatar">
+                <%= post.user.name.to_s.first&.upcase || "U" %>
+              </div>
 
-          <small>
-            <%= time_tag post.created_at,
-                         post.created_at.strftime("%Y-%m-%d %H:%M") %>
-          </small>
-        </p>
+              <div>
+                <strong>
+                  <%= link_to post.user.name, user_path(post.user) %>
+                </strong>
 
-        <div>
-          <%= render_markdown(post.content) %>
-        </div>
-      </article>
+                <time datetime="<%= post.created_at.iso8601 %>">
+                  <%= post.created_at.strftime("%b %d, %Y · %H:%M") %>
+                </time>
+              </div>
+            </div>
+          </div>
 
-      <hr>
-    <% end %>
+          <div class="discussion-post-content">
+            <%= render_markdown(post.content) %>
+          </div>
+        </article>
+      <% end %>
+    </div>
   <% else %>
-    <p>No discussion messages yet.</p>
+    <div class="discussion-empty-state">
+      <h3>No messages yet</h3>
+      <p>Be the first to start the conversation!</p>
+    </div>
   <% end %>
 <% end %>

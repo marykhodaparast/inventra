@@ -1,11 +1,47 @@
-<h1>My Profile</h1>
 
-<% if @user.avatar_url.present? %>
-  <%= image_tag @user.avatar_url, alt: "Profile avatar", width: 120 %>
-<% end %>
+<div class="page-heading">
+  <div>
+    <h1>My Profile</h1>
+    <p>View your personal information and profile details.</p>
+  </div>
 
-<p><strong>Name:</strong> <%= @user.name %></p>
-<p><strong>Email:</strong> <%= @user.email %></p>
-<p><strong>Bio:</strong> <%= @user.bio.presence || "No bio added yet." %></p>
+  <%= link_to "Edit Profile",
+      edit_profile_path,
+      class: "button button-primary" %>
+</div>
 
-<%= link_to "Edit Profile", edit_profile_path %>
+<section class="profile-card">
+  <div class="profile-header">
+    <% if @user.avatar_url.present? %>
+      <%= image_tag @user.avatar_url,
+          alt: "Profile avatar",
+          class: "profile-avatar" %>
+    <% else %>
+      <div class="profile-avatar-placeholder" aria-label="No profile photo">
+        <span><%= @user.name.to_s.first&.upcase || "U" %></span>
+      </div>
+    <% end %>
+
+    <div class="profile-identity">
+      <h2><%= @user.name %></h2>
+      <p><%= @user.email %></p>
+    </div>
+  </div>
+
+  <div class="profile-details">
+    <div class="profile-detail">
+      <span class="profile-detail-label">Full Name</span>
+      <strong><%= @user.name %></strong>
+    </div>
+
+    <div class="profile-detail">
+      <span class="profile-detail-label">Email Address</span>
+      <strong><%= @user.email %></strong>
+    </div>
+
+    <div class="profile-detail profile-bio">
+      <span class="profile-detail-label">About Me</span>
+      <p><%= @user.bio.presence || "No bio added yet." %></p>
+    </div>
+  </div>
+</section>

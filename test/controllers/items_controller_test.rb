@@ -36,7 +36,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   assert_select "a[href=?]", inventory_item_path(@inventory, @item), text: "Laptop"
 end
 
-  test "should display inventory statistics" do
+test "should display inventory statistics" do
   @inventory.custom_fields.create!(
     name: "Author",
     field_type: "text"
@@ -52,12 +52,19 @@ end
 
   assert_response :success
 
-  assert_select "#inventory-statistics" do
-    assert_select "li", "Total Items: 1"
-    assert_select "li", "Total Categories: 1"
-    assert_select "li", "Total Custom Fields: 1"
-    assert_select "li", "Total Discussion Posts: 1"
-  end
+  assert_select "#inventory-statistics .stat-card", count: 4
+
+  assert_select ".stat-card:nth-child(1) .stat-label", text: "Total Items"
+  assert_select ".stat-card:nth-child(1) .stat-value", text: "1"
+
+  assert_select ".stat-card:nth-child(2) .stat-label", text: "Categories"
+  assert_select ".stat-card:nth-child(2) .stat-value", text: "1"
+
+  assert_select ".stat-card:nth-child(3) .stat-label", text: "Custom Fields"
+  assert_select ".stat-card:nth-child(3) .stat-value", text: "1"
+
+  assert_select ".stat-card:nth-child(4) .stat-label", text: "Discussion Posts"
+  assert_select ".stat-card:nth-child(4) .stat-value", text: "1"
 end
 
 
@@ -70,12 +77,12 @@ test "should display zero statistics for an empty inventory" do
 
   assert_response :success
 
-  assert_select "#inventory-statistics" do
-    assert_select "li", "Total Items: 0"
-    assert_select "li", "Total Categories: 0"
-    assert_select "li", "Total Custom Fields: 0"
-    assert_select "li", "Total Discussion Posts: 0"
-  end
+  assert_select "#inventory-statistics .stat-card", count: 4
+
+  assert_select ".stat-card:nth-child(1) .stat-value", text: "0"
+  assert_select ".stat-card:nth-child(2) .stat-value", text: "0"
+  assert_select ".stat-card:nth-child(3) .stat-value", text: "0"
+  assert_select ".stat-card:nth-child(4) .stat-value", text: "0"
 end
 
 
@@ -109,14 +116,14 @@ test "statistics should only include records from the current inventory" do
 
   assert_response :success
 
-  assert_select "#inventory-statistics" do
-    assert_select "li", "Total Items: 1"
-    assert_select "li", "Total Categories: 1"
-    assert_select "li", "Total Custom Fields: 0"
-    assert_select "li", "Total Discussion Posts: 0"
-  end
-end
+  assert_select "#inventory-statistics .stat-card", count: 4
 
+  assert_select ".stat-card:nth-child(1) .stat-value", text: "1"
+  assert_select ".stat-card:nth-child(2) .stat-value", text: "1"
+  assert_select ".stat-card:nth-child(3) .stat-value", text: "0"
+  assert_select ".stat-card:nth-child(4) .stat-value", text: "0"
+
+end
 
 
   test "should display new item form" do
@@ -652,7 +659,7 @@ test "should display discussion posts with author and markdown" do
   assert_select "a[href=?]", user_path(@user), text: @user.name
   assert_select "strong", "Inventra"
   assert_includes response.body,
-                  discussion_post.created_at.strftime("%Y-%m-%d %H:%M")
+                discussion_post.created_at.strftime("%b %d, %Y · %H:%M")
 end
 
 test "should display discussion form for logged in user" do

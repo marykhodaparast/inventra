@@ -31,40 +31,49 @@ The application is deployed and publicly accessible.
 ## Implemented Features
 
 ### User Management
+
 - User registration and authentication
 - User profiles
 - User roles and administrator management
 - Public user profiles
 
 ### Inventory Management
+
 - Create, edit, and delete inventories
 - Inventory categories and tags
 - Public and private inventories
 - User-based inventory access permissions
 
 ### Custom Fields
+
 - Define custom fields for inventory items
 - Support different field types
 - Reorder custom fields
 - Dynamically generate item forms based on field definitions
 
 ### Custom Inventory IDs
+
 - Automatically generate sequential inventory IDs
 - Ensure database-level uniqueness
 - Display custom IDs in inventory views
 
 ### Items
+
 - Create, view, edit, and delete inventory items
 - Sortable and searchable item listings
 - Inventory statistics
 
 ### Collaboration
+
 - Inventory discussion boards
 - Markdown support
+- Like and unlike discussion posts
+- Display discussion post like counts
 - Discussion updates
 - Optimistic locking for concurrent edits
 
 ### Search and Dashboard
+
 - Full-text search
 - Latest inventories
 - Popular inventories
@@ -72,6 +81,7 @@ The application is deployed and publicly accessible.
 - Inventory statistics
 
 ### User Interface
+
 - Responsive design
 - Light and dark themes
 - Consistent application-wide design system
@@ -124,6 +134,7 @@ export INVENTRA_DATABASE_PASSWORD
 Enter your PostgreSQL password when prompted.
 
 **Important:**
+
 - Run these commands in the same terminal session where you execute Rails database commands.
 - The password is stored only in the current shell session.
 - Run the commands again when opening a new terminal session.
@@ -197,8 +208,9 @@ bin/rails test
 ```
 
 **Latest test results:**
-- 188 runs
-- 757 assertions
+
+- 208 runs
+- 837 assertions
 - 0 failures
 - 0 errors
 - 0 skips
@@ -224,17 +236,20 @@ bin/rails test
 - [x] Implement full-text search
 - [x] Implement inventory tags and tag-based discovery
 - [x] Implement discussion features
+- [x] Implement discussion post likes
 - [x] Implement dashboard and statistics
 - [x] Add responsive UI and themes
 - [x] Improve application-wide UI and UX
 - [x] Verify production database migrations
 - [x] Verify production registration and login
 - [x] Run the complete test suite successfully
+- [x] Verify the latest production deployment
+- [x] Test discussion likes and production UI
 - [x] Prepare project documentation
+- [x] Complete the final project review
 
 ### Upcoming
 
-- [ ] Final project review
 - [ ] Presentation preparation
 
 ## Author

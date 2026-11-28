@@ -6,16 +6,12 @@
     </div>
   </div>
 
+
   <div class="discussion-posts-container">
-    <%= turbo_frame_tag "discussion_posts",
-                        src: inventory_discussion_posts_path(@inventory),
-                        loading: :eager,
-                        data: { controller: "discussion-refresh" } do %>
-      <div class="discussion-loading">
-        <span class="loading-indicator"></span>
-        <p>Loading discussion...</p>
-      </div>
-    <% end %>
+  <%= render "discussion_posts/posts",
+             discussion_posts: @inventory.discussion_posts
+               .includes(:user, :discussion_post_likes)
+               .order(created_at: :asc) %>
   </div>
 
   <% if current_user.present? %>

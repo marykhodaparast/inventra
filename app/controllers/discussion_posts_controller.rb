@@ -5,8 +5,8 @@ class DiscussionPostsController < ApplicationController
   @inventory = Inventory.find(params[:inventory_id])
 
   @discussion_posts = @inventory.discussion_posts
-                                 .includes(:user)
-                                 .order(created_at: :asc)
+                               .includes(:user, :discussion_post_likes)
+                               .order(created_at: :asc)
 
   render partial: "discussion_posts/posts",
          locals: { discussion_posts: @discussion_posts }

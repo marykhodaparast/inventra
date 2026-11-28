@@ -1,8 +1,9 @@
 class InventoriesController < ApplicationController
-  before_action :require_login, only: [:new, :create]
-  before_action :set_inventory, only: [:edit, :update, :destroy]
-  before_action :require_manage_access, only: [:edit, :update, :destroy]
-  before_action :load_edit_data, only: [:edit, :update]
+  before_action :require_login, only: [ :new, :create ]
+  before_action :set_inventory, only: [ :edit, :update, :destroy ]
+  before_action :require_manage_access, only: [ :edit, :update ]
+  before_action :require_destroy_access, only: [ :destroy ]
+  before_action :load_edit_data, only: [ :edit, :update ]
 
   def index
     @inventories = Inventory.includes(:user).order(created_at: :desc)
@@ -23,7 +24,6 @@ class InventoriesController < ApplicationController
   end
 
   def edit
-  
   end
 
   def update
@@ -54,20 +54,31 @@ class InventoriesController < ApplicationController
   existing_user_ids = @inventory.inventory_accesses.pluck(:user_id)
 
   @available_users = User.where.not(
-    id: existing_user_ids + [@inventory.user_id]
+    id: existing_user_ids + [ @inventory.user_id ]
   ).order(:name, :email)
 end
 
   def require_manage_access
-    return if current_user&.admin? || @inventory.user_id == current_user&.id
+  return if current_user&.admin? || @inventory.user_id == current_user&.id
 
-    if current_user.nil?
-      redirect_to login_path, alert: "Please log in to continue."
-    else
-      redirect_to inventories_path,
-                  alert: "You don't have permission to manage this inventory."
-    end
+  if current_user.nil?
+    redirect_to login_path, alert: "Please log in to continue."
+  else
+    redirect_to inventories_path,
+                alert: "You don't have permission to manage this inventory."
   end
+end
+
+  def require_destroy_access
+  return if current_user&.admin? || @inventory.user_id == current_user&.id
+
+  if current_user.nil?
+    redirect_to login_path, alert: "Please log in to continue."
+  else
+    redirect_to inventories_path,
+                alert: "You don't have permission to delete this inventory."
+  end
+end
 
   def inventory_params
     params.require(:inventory).permit(:name, :description, :visibility)

@@ -1851,7 +1851,7 @@ img {
 }
 
 .discussion-post-card {
-    padding: 20px;
+    padding: 20px !important;
     background: var(--surface-hover);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);

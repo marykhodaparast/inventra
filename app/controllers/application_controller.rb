@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  # Below line allows views to use these two varibles
   helper_method :current_user, :logged_in?
 
   private

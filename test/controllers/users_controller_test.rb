@@ -67,4 +67,20 @@ test "public profile does not expose user email" do
   assert_response :success
   assert_no_match user.email, response.body
 end
+test "user cannot assign admin role during signup" do
+  post users_url, params: {
+    user: {
+      name: "New User",
+      email: "role_test@example.com",
+      password: "password123",
+      password_confirmation: "password123",
+      role: "admin"
+    }
+  }
+
+  user = User.find_by(email: "role_test@example.com")
+
+  assert_not_nil user
+  assert_not user.admin?
+end
 end

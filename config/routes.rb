@@ -3,18 +3,21 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users, only: [ :index, :update ]
   end
-  resources :inventories, only: [:index, :new, :create, :edit, :update, :destroy] do
-    resources :categories, only: [:create, :update, :destroy]
-    resources :custom_fields, only: [:create, :update, :destroy]
-    resources :items, only: [:index, :new, :create, :show, :edit, :update, :destroy]
-    resources :inventory_accesses, only: [:create, :destroy]
-    resources :inventory_tags, only: [:create, :destroy]
-    resources :discussion_posts, only: [:index, :create]
+  resources :inventories, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+    resources :categories, only: [ :create, :update, :destroy ]
+    resources :custom_fields, only: [ :create, :update, :destroy ]
+    resources :items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
+    resources :inventory_accesses, only: [ :create, :destroy ]
+    resources :inventory_tags, only: [ :create, :destroy ]
+
+    resources :discussion_posts, only: [ :index, :create ] do
+       resource :like, only: [ :create, :destroy ], controller: "discussion_post_likes"
+    end
   end
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
-  resources :users, only: [:new, :create, :show]
+  resources :users, only: [ :new, :create, :show ]
   resource :profile, only: [ :show, :edit, :update ]
 
 

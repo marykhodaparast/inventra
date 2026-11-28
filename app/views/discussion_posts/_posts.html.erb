@@ -24,6 +24,27 @@
           <div class="discussion-post-content">
             <%= render_markdown(post.content) %>
           </div>
+
+<div class="discussion-post-actions">
+  <span class="like-count">
+    <%= pluralize(post.discussion_post_likes.size, "Like") %>
+  </span>
+
+  <% if logged_in? %>
+    <% if post.discussion_post_likes.any? { |like| like.user_id == current_user.id } %>
+      <%= button_to "Unlike",
+                    inventory_discussion_post_like_path(post.inventory, post),
+                    method: :delete,
+                    class: "btn btn-sm btn-outline-secondary" %>
+    <% else %>
+      <%= button_to "Like",
+                    inventory_discussion_post_like_path(post.inventory, post),
+                    method: :post,
+                    class: "btn btn-sm btn-outline-primary" %>
+    <% end %>
+  <% end %>
+</div>
+
         </article>
       <% end %>
     </div>
